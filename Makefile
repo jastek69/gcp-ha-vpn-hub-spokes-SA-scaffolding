@@ -1,37 +1,26 @@
 # ===========================================================
-# Terraform Bootstrap Makefile
+# Terraform Hub-Spoke Bootstrap & Lifecycle Makefile
 # ===========================================================
 #
-# CICD with Debug
-#
-# 📝 CHEAT SHEET
-#
-# Setup / Checks:
-#   make doctor-bootstrap        → Check/create Terraform SAs + baseline roles
-#   make status-bootstrap        → Show current bootstrap_mode value
-#   make toggle-bootstrap MODE=… → Flip bootstrap_mode in terraform.tfvars (true|false)
-#
-# Bootstrap Flow:
-#   make all-bootstrap           → Wrapper: runs doctor + bindings (fail-fast)
-#   make bootstrap-sas           → Ensure SAs exist and baseline roles granted
-#   make bootstrap-bindings      → Apply impersonation bindings (bootstrap_mode=true)
-#   make reset-bootstrap         → Remove bootstrap IAM roles (+DELETE_SA=true optional)
-#
-# Owner Safety Controls:
-#   make restore-owner-only      → Restore Owner role to your Gmail
-#   make remove-owner-only       → Remove Owner role from your Gmail
-#   make panic-owner-safety      → Panic button: forcibly rebind Owner
-#   make status-owner            → Show Owner bindings on both projects
+# Usage Cheat Sheet:
+#   make doctor-bootstrap         → Ensure Terraform SAs exist + baseline roles
+#   make bootstrap                → Bootstrap SAs + impersonation bindings
+#   make reset-bootstrap          → Reset baseline IAM (DELETE_SA=true optional)
+#   make toggle-bootstrap MODE=…  → Flip bootstrap_mode in terraform.tfvars
+#   make staged-apply             → Run staged Terraform apply with waits
+#   make staged-destroy           → Run staged Terraform destroy in reverse
+#   make safe-apply               → Safe apply with confirmation prompts
+#   make safe-destroy             → Safe destroy with confirmation prompts
 #
 # Flags:
-#   FORCE=true                   → Bypass confirmation prompts (automation parity)
-#   DELETE_SA=true               → Also delete Terraform SAs during reset
+#   FORCE=true   → Bypass confirmation prompts
+#   DELETE_SA=true → Also delete Terraform SAs on reset
 #
 # ===========================================================
 BALERICA_PROJECT ?= taaops
 GENOSHA_PROJECT  ?= genosha-ops
 BALERICA_REGION  ?= asia-southeast1
-GENOSHA_REGION   ?= southamerica-east1
+GENOSHA_REGION   ?= us-central1
 USER_EMAIL       ?= jastek.sweeney@gmail.com
 
 RED    := $(shell tput setaf 1)
@@ -44,50 +33,45 @@ RESET  := $(shell tput sgr0)
 # ===========================================================
 doctor-bootstrap:
 	@echo "=== [DOCTOR] Checking Terraform bootstrap service accounts ==="
+	@for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
+	  echo "--- $$project ---"; \
+	  if gcloud iam service-accounts list --project $$project \
+	    --filter="email:terraform@$$project.iam.gserviceaccount.com" \
+	    --format="value(email)" | grep -q "terraform@$$project.iam.gserviceaccount.com"; then \
+	      echo "$(GREEN)[PASS]$(RESET) Found terraform@$$project.iam.gserviceaccount.com"; \
+	  else \
+	      echo "$(YELLOW)[WARN]$(RESET) Missing SA, creating..."; \
+	      gcloud iam service-accounts create terraform \
+	        --display-name="terraform" \
+	        --project=$$project; \ || true
+	  fi; \
+	  echo "🔑 Ensuring baseline roles..."; \
+	  for role in roles/iam.serviceAccountAdmin \
+	              roles/iam.serviceAccountTokenCreator \
+	              roles/viewer \
+	              roles/compute.networkAdmin \
+	              roles/networkconnectivity.admin; do \
+	    gcloud projects add-iam-policy-binding $$project \
+	      --member="serviceAccount:terraform@$$project.iam.gserviceaccount.com" \
+	      --role="$$role" >/dev/null; || true \
+	  done; \
+	done
 
-	@echo "--- Balerica project ($(BALERICA_PROJECT)) ---"
-	@if gcloud iam service-accounts list --project $(BALERICA_PROJECT) \
-		--filter="email:terraform@$(BALERICA_PROJECT).iam.gserviceaccount.com" \
-		--format="value(email)" | grep -q "terraform@$(BALERICA_PROJECT).iam.gserviceaccount.com"; then \
-			echo "$(GREEN)[PASS]$(RESET) Found terraform@$(BALERICA_PROJECT).iam.gserviceaccount.com"; \
-		else \
-			echo "$(YELLOW)[WARN]$(RESET) Missing SA, creating..."; \
-			gcloud iam service-accounts create terraform \
-			  --display-name="terraform" \
-			  --project=$(BALERICA_PROJECT); \
-		fi; \
-		echo "🔑 Ensuring minimal + baseline IAM roles..."; \
-		for role in roles/iam.serviceAccountAdmin \
-		            roles/iam.serviceAccountTokenCreator \
-		            roles/viewer \
-		            roles/compute.networkAdmin \
-		            roles/networkconnectivity.admin; do \
-			gcloud projects add-iam-policy-binding $(BALERICA_PROJECT) \
-			  --member="serviceAccount:terraform@$(BALERICA_PROJECT).iam.gserviceaccount.com" \
-			  --role="$$role" >/dev/null; \
-		done
 
-	@echo "--- Genosha project ($(GENOSHA_PROJECT)) ---"
-	@if gcloud iam service-accounts list --project $(GENOSHA_PROJECT) \
-		--filter="email:terraform@$(GENOSHA_PROJECT).iam.gserviceaccount.com" \
-		--format="value(email)" | grep -q "terraform@$(GENOSHA_PROJECT).iam.gserviceaccount.com"; then \
-			echo "$(GREEN)[PASS]$(RESET) Found terraform@$(GENOSHA_PROJECT).iam.gserviceaccount.com"; \
-		else \
-			echo "$(YELLOW)[WARN]$(RESET) Missing SA, creating..."; \
-			gcloud iam service-accounts create terraform \
-			  --display-name="terraform" \
-			  --project=$(GENOSHA_PROJECT); \
-		fi; \
-		echo "🔑 Ensuring minimal + baseline IAM roles..."; \
-		for role in roles/iam.serviceAccountAdmin \
-		            roles/iam.serviceAccountTokenCreator \
-		            roles/viewer \
-		            roles/compute.networkAdmin \
-		            roles/networkconnectivity.admin; do \
-			gcloud projects add-iam-policy-binding $(GENOSHA_PROJECT) \
-			  --member="serviceAccount:terraform@$(GENOSHA_PROJECT).iam.gserviceaccount.com" \
-			  --role="$$role" >/dev/null; \
-		done
+# ===========================================================
+# Bootstrap Wrapper
+# ===========================================================
+all-bootstrap:
+	@echo "=== [ALL-BOOTSTRAP WRAPPER] ==="
+	@echo "$(YELLOW)⚠️ Reminder: Run 'gcloud auth application-default login' first, and ensure bootstrap_mode=true.$(RESET)"
+	@if ! grep -q "bootstrap_mode *= *true" terraform.tfvars; then \
+	  echo "$(RED)ERROR: bootstrap_mode is not true. Aborting.$(RESET)"; exit 1; \
+	fi
+	$(MAKE) bootstrap-sas
+	$(MAKE) bootstrap-bindings
+	@echo "$(GREEN)✅ All bootstrap steps complete.$(RESET)"
+
+
 
 # ===========================================================
 # Bootstrap Flow
@@ -109,17 +93,6 @@ bootstrap-bindings:
 
 bootstrap: bootstrap-sas bootstrap-bindings
 	@echo "$(GREEN)✅ Bootstrap complete.$(RESET)"
-	@echo "👉 Next: set bootstrap_mode=false and re-authenticate with gcloud"
-
-all-bootstrap:
-	@echo "=== [ALL-BOOTSTRAP WRAPPER] ==="
-	@echo "$(YELLOW)⚠️ Reminder: Run 'gcloud auth application-default login' first, and ensure bootstrap_mode=true.$(RESET)"
-	@if ! grep -q "bootstrap_mode *= *true" terraform.tfvars; then \
-	  echo "$(RED)ERROR: bootstrap_mode is not true. Aborting.$(RESET)"; exit 1; \
-	fi
-	$(MAKE) bootstrap-sas
-	$(MAKE) bootstrap-bindings
-	@echo "$(GREEN)✅ All bootstrap steps complete.$(RESET)"
 
 reset-bootstrap:
 	@echo "=== [RESET] Removing bootstrap IAM roles ==="
@@ -134,77 +107,56 @@ reset-bootstrap:
 	               roles/viewer \
 	               roles/compute.networkAdmin \
 	               roles/networkconnectivity.admin; do \
-	    echo "Removing $$role..."; \
 	    gcloud projects remove-iam-policy-binding $$project \
 	      --member="serviceAccount:terraform@$$project.iam.gserviceaccount.com" \
 	      --role="$$role" || true; \
 	  done; \
 	  if [ "$(DELETE_SA)" = "true" ]; then \
-	    echo "Deleting SA terraform@$$project.iam.gserviceaccount.com..."; \
 	    gcloud iam service-accounts delete terraform@$$project.iam.gserviceaccount.com \
 	      --project $$project --quiet || true; \
-	  else \
-	    echo "Skipping SA deletion for $$project (set DELETE_SA=true to force)."; \
 	  fi; \
 	done
-	@echo "$(GREEN)✅ Reset complete.$(RESET)"
 
 # ===========================================================
-# Owner Safety Helpers
+# Lifecycle: staged apply/destroy
 # ===========================================================
-restore-owner-only:
-	@echo "=== [OWNER RESTORE] Rebinding Owner to Gmail ($(USER_EMAIL)) ==="
+staged-apply:
+	@echo "=== [STAGED APPLY] ==="
+	terraform apply -target=module.balerica_vpc -target=module.genosha_vpc -auto-approve
+	sleep 30
+	terraform apply -target=google_compute_router.routers -auto-approve
+	sleep 60
+	terraform apply -target=google_compute_router_interface.interfaces -target=google_compute_router_peer.peers -auto-approve
+	sleep 30
+	terraform apply -auto-approve
+	@echo "$(GREEN)✅ Staged apply complete.$(RESET)"
+
+staged-destroy:
+	@echo "=== [STAGED DESTROY] ==="
+	terraform destroy -target=google_compute_router_peer.peers -auto-approve || true
+	terraform destroy -target=google_compute_router_interface.interfaces -auto-approve || true
+	terraform destroy -target=google_compute_router.routers -auto-approve || true
+	sleep 30
+	terraform destroy -target=google_compute_vpn_tunnel.all -auto-approve || true
+	terraform destroy -target=google_compute_ha_vpn_gateway.gateways -auto-approve || true
+	terraform destroy -target=module.balerica_vpc -target=module.genosha_vpc -auto-approve || true
+	@echo "$(GREEN)✅ Staged destroy complete.$(RESET)"
+
+safe-apply:
+	@echo "=== [SAFE APPLY] ==="
 	@if [ "$(FORCE)" != "true" ]; then \
-	  read -p "⚠️  Type 'yes' to restore Owner to $(USER_EMAIL): " ans; \
+	  read -p "⚠️ Type 'yes' to continue with apply: " ans; \
 	  [ "$$ans" = "yes" ] || { echo "Aborted."; exit 1; }; \
 	fi
-	@for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
-	  gcloud projects add-iam-policy-binding $$project \
-	    --member="user:$(USER_EMAIL)" --role="roles/owner" || true; \
-	done
-	@echo "$(GREEN)✅ Owner role restored.$(RESET)"
+	$(MAKE) staged-apply
 
-remove-owner-only:
-	@echo "=== [OWNER REMOVE] Removing Owner from Gmail ($(USER_EMAIL)) ==="
+safe-destroy:
+	@echo "=== [SAFE DESTROY] ==="
 	@if [ "$(FORCE)" != "true" ]; then \
-	  read -p "⚠️  Type 'yes' to remove Owner from $(USER_EMAIL): " ans; \
+	  read -p "⚠️ Type 'yes' to continue with destroy: " ans; \
 	  [ "$$ans" = "yes" ] || { echo "Aborted."; exit 1; }; \
 	fi
-	@for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
-	  gcloud projects remove-iam-policy-binding $$project \
-	    --member="user:$(USER_EMAIL)" --role="roles/owner" || true; \
-	done
-	@echo "$(GREEN)✅ Owner role removed.$(RESET)"
-
-panic-owner-safety:
-	@echo "=== [PANIC SAFETY] Resetting Owner to Gmail ($(USER_EMAIL)) ==="
-	@if [ "$(FORCE)" != "true" ]; then \
-	  read -p "⚠️  Type 'yes' to PANIC RESTORE Owner to $(USER_EMAIL): " ans; \
-	  [ "$$ans" = "yes" ] || { echo "Aborted."; exit 1; }; \
-	fi
-	@for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
-	  gcloud projects add-iam-policy-binding $$project \
-	    --member="user:$(USER_EMAIL)" --role="roles/owner" || true; \
-	done
-	@echo "$(GREEN)🚨 Owner safety restored (panic button).$(RESET)"
-
-status-owner:
-	@echo "=== [OWNER STATUS] Checking Owner bindings ==="
-	@for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
-	  echo "--- $$project ---"; \
-	  gcloud projects get-iam-policy $$project \
-	    --flatten="bindings[].members" \
-	    --filter="bindings.role:roles/owner AND bindings.members:user:$(USER_EMAIL)" \
-	    --format="table(bindings.role, bindings.members)" || true; \
-	done
-
-panic-owner-safety-wrapper:
-	@echo "=== [OWNER SAFETY WRAPPER] ==="
-	@if [ "$(FORCE)" != "true" ]; then \
-	  echo "$(RED)HARD GUARD: Requires FORCE=true to run this wrapper.$(RESET)"; exit 1; \
-	fi
-	$(MAKE) restore-owner-only FORCE=true
-	$(MAKE) status-owner
+	$(MAKE) staged-destroy
 
 # ===========================================================
 # Bootstrap Mode Helpers
@@ -220,3 +172,124 @@ toggle-bootstrap:
 status-bootstrap:
 	@echo "=== [STATUS] bootstrap_mode ==="
 	@grep "bootstrap_mode" terraform.tfvars || echo "$(RED)bootstrap_mode not set$(RESET)"
+
+
+# ===========================================================
+# Smoke Tests
+# ===========================================================
+
+# Soft version: only displays tunnel and router status (does not fail)
+smoke-test-lite:
+	@echo "=== [SMOKE TEST - LITE] Checking current HA VPN and Router health ==="
+	@for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
+	  echo "--- Routers in $$project ---"; \
+	  gcloud compute routers list --project=$$project --format="table(name, region, network)" || true; \
+	  echo "--- HA VPN Gateways in $$project ---"; \
+	  gcloud compute vpn-gateways list --project=$$project --format="table(name, network, region)" || true; \
+	  echo "--- VPN Tunnels in $$project ---"; \
+	  gcloud compute vpn-tunnels list --project=$$project --format="table(name, region, status)" || true; \
+	done
+	@echo "$(GREEN)✅ Smoke-test-lite complete — informational only.$(RESET)"
+
+# Strict version: fails if any tunnel is not ESTABLISHED
+smoke-test:
+	@echo "=== [SMOKE TEST - STRICT] Validating VPN Tunnels ESTABLISHED status ==="
+	@failed=0; \
+	for project in $(BALERICA_PROJECT) $(GENOSHA_PROJECT); do \
+	  for t in $$(gcloud compute vpn-tunnels list --project=$$project --format="value(name)"); do \
+	    region=$$(gcloud compute vpn-tunnels list --project=$$project --filter="name=$$t" --format="value(region)"); \
+	    status=$$(gcloud compute vpn-tunnels describe $$t --project=$$project --region=$$region --format="value(status)"); \
+	    if [ "$$status" != "ESTABLISHED" ]; then \
+	      echo "$(RED)❌ Tunnel $$t in $$project is $$status (expected ESTABLISHED)$(RESET)"; \
+	      failed=1; \
+	    else \
+	      echo "$(GREEN)✅ Tunnel $$t in $$project is ESTABLISHED$(RESET)"; \
+	    fi; \
+	  done; \
+	done; \
+	if [ $$failed -ne 0 ]; then \
+	  echo "$(RED)SMOKE TEST FAILED: One or more tunnels are not ESTABLISHED$(RESET)"; \
+	  exit 1; \
+	else \
+	  echo "$(GREEN)All VPN tunnels are ESTABLISHED. Smoke test passed.$(RESET)"; \
+	fi
+
+
+# ===========================================================
+# Network Verification
+# ===========================================================
+# Runs both smoke-test-lite (non-blocking info) and smoke-test (strict validation)
+# Useful as a post-deploy health gate for CI/CD or manual validation.
+# ===========================================================
+
+verify-network:
+	@echo "=== [VERIFY NETWORK] Combined connectivity and tunnel health check ==="
+	@echo "$(YELLOW)Step 1: Gathering network and tunnel summaries (lite check)...$(RESET)"
+	@$(MAKE) smoke-test-lite || true
+	@echo "$(YELLOW)Step 2: Validating VPN tunnels are ESTABLISHED (strict check)...$(RESET)"
+	@$(MAKE) smoke-test || { \
+	  echo "$(RED)❌ Network verification failed. Some tunnels not established.$(RESET)"; \
+	  exit 1; \
+	}
+	@echo "$(GREEN)✅ All tunnels verified and network is operational.$(RESET)"
+
+
+# ===========================================================
+# CI/CD Pipeline Automation Targets
+# ===========================================================
+
+# Run staged apply in CI/CD or local non-interactive mode
+apply-ci:
+	@echo "=== [CI/CD APPLY] ==="
+	@echo "$(YELLOW)🚀 Running CI/CD staged Terraform apply pipeline...$(RESET)"
+	@if [ "$(CI)" = "true" ]; then \
+		bash ./apply-staged-ci.sh; \
+	else \
+		read -p "⚠️  Run Terraform apply pipeline now? (yes/no): " ans; \
+		[ "$$ans" = "yes" ] || { echo "Aborted."; exit 1; }; \
+		bash ./apply-staged-ci.sh; \
+	fi
+
+# Run staged destroy in CI/CD or local non-interactive mode
+destroy-ci:
+	@echo "=== [CI/CD DESTROY] ==="
+	@echo "$(YELLOW)💣 Running CI/CD staged Terraform destroy pipeline...$(RESET)"
+	@if [ "$(CI)" = "true" ]; then \
+		bash ./destroy-staged-ci.sh; \
+	else \
+		read -p "⚠️  This will destroy infrastructure. Continue? (yes/no): " ans; \
+		[ "$$ans" = "yes" ] || { echo "Aborted."; exit 1; }; \
+		bash ./destroy-staged-ci.sh; \
+	fi
+
+# CI/CD dry-run preview (Terraform plan only)
+plan-ci:
+	@echo "=== [CI/CD PLAN] ==="
+	@echo "$(YELLOW)🧠 Running Terraform dry-run plan in CI/CD mode...$(RESET)"
+	@APPLY_MODE=plan CI=true bash ./apply-staged-ci.sh
+
+# Smoke-test as part of pipeline (quick tunnel check)
+smoke-ci:
+	@echo "=== [CI/CD SMOKE TEST] ==="
+	@echo "$(YELLOW)🔎 Verifying VPN tunnel establishment...$(RESET)"
+	@if gcloud compute vpn-tunnels list --format="table(name,region,status)" | grep -q ESTABLISHED; then \
+		echo "$(GREEN)✅ All VPN tunnels are ESTABLISHED.$(RESET)"; \
+	else \
+		echo "$(RED)❌ Some tunnels are not established. Failing CI step.$(RESET)"; \
+		exit 1; \
+	fi
+
+# Verify network connectivity and router reachability post-deploy
+verify-ci:
+	@echo "=== [CI/CD VERIFY NETWORK] ==="
+	@echo "$(YELLOW)🌐 Running full router + tunnel verification...$(RESET)"
+	@bash ./verify-network.sh || { echo "$(RED)Network verification failed.$(RESET)"; exit 1; }
+
+# Shortcut for a full CI/CD pipeline run (plan → apply → smoke → verify)
+pipeline-ci:
+	@echo "=== [CI/CD PIPELINE] Full Terraform Infrastructure Flow ==="
+	$(MAKE) plan-ci
+	$(MAKE) apply-ci CI=true FORCE=true
+	$(MAKE) smoke-ci
+	$(MAKE) verify-ci
+	@echo "$(GREEN)🎉 CI/CD pipeline complete — infrastructure verified.$(RESET)"

@@ -30,3 +30,18 @@ module "genosha_vpc" {
   project = var.genosha_project
   name    = "${var.genosha_project}-vpc"
 }
+
+
+# ----------------------
+# Wakanda VPC
+# ----------------------
+module "wakanda_vpc" {
+  source = "./modules/vpc"
+
+  providers = {
+    google = google.wakanda_ops
+  }
+
+  project = var.wakanda_project
+  name    = "${var.wakanda_project}-vpc"
+}

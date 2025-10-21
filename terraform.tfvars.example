@@ -1,0 +1,256 @@
+# ============================================================
+# terraform.tfvars.example
+# Template variables for hub-and-spoke VPN infrastructure
+#
+# Copy to terraform.tfvars and replace placeholders with
+# environment-specific values before running terraform plan/apply.
+#
+# For impersonation to work each project needs a Terraform service account with:
+#   * Service Account Credentials API enabled.
+#   * Service Account Token Creator (roles/iam.serviceAccountTokenCreator).
+# ============================================================
+
+# --------------------------------------------------------------
+# Bootstrap mode
+#   true  = Run Terraform as Gmail Owner (ADC)
+#   false = Impersonate Terraform SAs
+# --------------------------------------------------------------
+bootstrap_mode = true   # [true|false]
+cicd_account   = "user@example.com"
+
+
+# --------------------------------------------------------------
+# Projects + Service Accounts
+# --------------------------------------------------------------
+# Hub project (Balerica baseline)
+balerica_project = "hub-project-id"
+balerica_region  = "asia-southeast1"
+balerica_zone    = "asia-southeast1-a"
+balerica_sa      = "terraform@hub-project-id.iam.gserviceaccount.com"
+
+# Primary spoke (Genosha baseline)
+genosha_project = "first-spoke-project-id"
+genosha_region  = "us-central1"
+genosha_zone    = "us-central1-a"
+genosha_sa      = "terraform@first-spoke-project-id.iam.gserviceaccount.com"
+
+# Secondary spoke (Wakanda baseline)
+wakanda_project = "second-spoke-project-id"
+wakanda_region  = "us-west2"
+wakanda_zone    = "us-west2-a"
+wakanda_sa      = "terraform@second-spoke-project-id.iam.gserviceaccount.com"
+
+# Optional future spoke slot (TIQS example)
+tiqs_project = "future-spoke-project-id"
+tiqs_region  = "us-west3"
+tiqs_zone    = "us-west3-a"
+tiqs_sa      = "terraform@future-spoke-project-id.iam.gserviceaccount.com"
+
+
+# --------------------------------------------------------------
+# Spokes map (project_id + SA email)
+# Add more entries to onboard new spokes.
+# --------------------------------------------------------------
+spokes = {
+  "hub-project-id"          = "terraform@hub-project-id.iam.gserviceaccount.com"
+  "first-spoke-project-id"  = "terraform@first-spoke-project-id.iam.gserviceaccount.com"
+  "second-spoke-project-id" = "terraform@second-spoke-project-id.iam.gserviceaccount.com"
+  # "future-spoke-project-id" = "terraform@future-spoke-project-id.iam.gserviceaccount.com"
+}
+
+
+# --------------------------------------------------------------
+# Spoke regions (project_id + region)
+# Note: site-to-site data transfer is not available in every region.
+# --------------------------------------------------------------
+spoke_regions = {
+  "hub-project-id"          = "asia-southeast1"
+  "first-spoke-project-id"  = "us-central1"
+  "second-spoke-project-id" = "us-west2"
+  # "future-spoke-project-id" = "us-west3"
+}
+
+
+# --------------------------------------------------------------
+# Subnet CIDR assignments
+# --------------------------------------------------------------
+subnet_cidrs = {
+  "hub-project-id"          = "10.25.0.0/24"
+  "first-spoke-project-id"  = "10.20.0.0/24"
+  "second-spoke-project-id" = "10.30.0.0/24"
+  # "future-spoke-project-id" = "10.40.0.0/24"
+}
+
+
+# --------------------------------------------------------------
+# Startup scripts (keys must match project IDs above)
+# --------------------------------------------------------------
+startup_scripts = {
+  "hub-project-id"          = "scripts/startup/startup.sh"
+  "first-spoke-project-id"  = "scripts/startup/taastartup.sh"
+  "second-spoke-project-id" = "scripts/startup/startup.sh"
+  # "future-spoke-project-id" = "scripts/startup/future.sh"
+}
+
+
+# --------------------------------------------------------------
+# VPN Tunnel Definitions (HA: t0 + t1, expandable to t2 + t3)
+# Replace PSKs with secure, random 32+ character values.
+# --------------------------------------------------------------
+tunnels = {
+  # Hub -> primary spoke
+  hub-to-primary = {
+    src        = "hub-project-id"
+    dst        = "first-spoke-project-id"
+    region_src = "asia-southeast1"
+    region_dst = "us-central1"
+    asn_src    = 65501
+    asn_dst    = 65515
+
+    tunnels = {
+      t0 = {
+        psk    = "changeme-psk-t0"
+        ip_src = "169.254.10.1/30"
+        ip_dst = "169.254.10.2/30"
+      }
+      t1 = {
+        psk    = "changeme-psk-t1"
+        ip_src = "169.254.10.5/30"
+        ip_dst = "169.254.10.6/30"
+      }
+      # Expansion / HA
+      t2 = {
+        psk    = "changeme-psk-t2"
+        ip_src = "169.254.10.9/30"
+        ip_dst = "169.254.10.10/30"
+      }
+      t3 = {
+        psk    = "changeme-psk-t3"
+        ip_src = "169.254.10.13/30"
+        ip_dst = "169.254.10.14/30"
+      }
+    }
+  }
+
+  # Primary spoke -> hub (reverse definition mirrors IPs/PSKs)
+  primary-to-hub = {
+    src        = "first-spoke-project-id"
+    dst        = "hub-project-id"
+    region_src = "us-central1"
+    region_dst = "asia-southeast1"
+    asn_src    = 65515
+    asn_dst    = 65501
+
+    tunnels = {
+      t0 = {
+        psk    = "changeme-psk-t0"
+        ip_src = "169.254.10.2/30"
+        ip_dst = "169.254.10.1/30"
+      }
+      t1 = {
+        psk    = "changeme-psk-t1"
+        ip_src = "169.254.10.6/30"
+        ip_dst = "169.254.10.5/30"
+      }
+      t2 = {
+        psk    = "changeme-psk-t2"
+        ip_src = "169.254.10.10/30"
+        ip_dst = "169.254.10.9/30"
+      }
+      t3 = {
+        psk    = "changeme-psk-t3"
+        ip_src = "169.254.10.14/30"
+        ip_dst = "169.254.10.13/30"
+      }
+    }
+  }
+
+  # Hub -> secondary spoke
+  hub-to-secondary = {
+    src        = "hub-project-id"
+    dst        = "second-spoke-project-id"
+    region_src = "asia-southeast1"
+    region_dst = "us-west2"
+    asn_src    = 65501
+    asn_dst    = 65520
+
+    tunnels = {
+      t0 = {
+        psk    = "changeme-psk-t0"
+        ip_src = "169.254.20.1/30"
+        ip_dst = "169.254.20.2/30"
+      }
+      t1 = {
+        psk    = "changeme-psk-t1"
+        ip_src = "169.254.20.5/30"
+        ip_dst = "169.254.20.6/30"
+      }
+      # Reserve future pairs if required
+      t2 = {
+        psk    = "changeme-psk-t2"
+        ip_src = "169.254.20.9/30"
+        ip_dst = "169.254.20.10/30"
+      }
+      t3 = {
+        psk    = "changeme-psk-t3"
+        ip_src = "169.254.20.13/30"
+        ip_dst = "169.254.20.14/30"
+      }
+    }
+  }
+
+  # Secondary spoke -> hub
+  secondary-to-hub = {
+    src        = "second-spoke-project-id"
+    dst        = "hub-project-id"
+    region_src = "us-west2"
+    region_dst = "asia-southeast1"
+    asn_src    = 65520
+    asn_dst    = 65501
+
+    tunnels = {
+      t0 = {
+        psk    = "changeme-psk-t0"
+        ip_src = "169.254.20.2/30"
+        ip_dst = "169.254.20.1/30"
+      }
+      t1 = {
+        psk    = "changeme-psk-t1"
+        ip_src = "169.254.20.6/30"
+        ip_dst = "169.254.20.5/30"
+      }
+      t2 = {
+        psk    = "changeme-psk-t2"
+        ip_src = "169.254.20.10/30"
+        ip_dst = "169.254.20.9/30"
+      }
+      t3 = {
+        psk    = "changeme-psk-t3"
+        ip_src = "169.254.20.14/30"
+        ip_dst = "169.254.20.13/30"
+      }
+    }
+  }
+
+  # Template for additional spokes (copy, update IDs/regions/ASNs/IPs)
+  # future-pair = {
+  #   src        = "future-spoke-project-id"
+  #   dst        = "another-project-id"
+  #   region_src = "region-a"
+  #   region_dst = "region-b"
+  #   asn_src    = 65530
+  #   asn_dst    = 65531
+  #   tunnels = {
+  #     t0 = {
+  #       psk    = "changeme-psk-t0"
+  #       ip_src = "169.254.30.1/30"
+  #       ip_dst = "169.254.30.2/30"
+  #     }
+  #     t1 = {
+  #       psk    = "changeme-psk-t1"
+  #       ip_src = "169.254.30.5/30"
+  #       ip_dst = "169.254.30.6/30"
+  #     }
+  #   }
+  # }
+}

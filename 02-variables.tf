@@ -35,12 +35,25 @@ variable "cicd_account" {
 # Projects
 # ------------------------------
 variable "balerica_project" { type = string }
-variable "balerica_region"  { type = string }
-variable "balerica_zone"    { type = string }
+variable "balerica_region" { type = string }
+variable "balerica_zone" { type = string }
 
-variable "genosha_project"  { type = string }
-variable "genosha_region"   { type = string }
-variable "genosha_zone"     { type = string }
+variable "genosha_project" { type = string }
+variable "genosha_region" { type = string }
+variable "genosha_zone" { type = string }
+
+
+variable "wakanda_project" { type = string }
+variable "wakanda_region" { type = string }
+variable "wakanda_zone" { type = string }
+
+variable "tiqs_project" { type = string }
+variable "tiqs_region" { type = string }
+variable "tiqs_zone" { type = string }
+
+
+
+
 
 # ------------------------------
 # Terraform Service Accounts
@@ -54,6 +67,18 @@ variable "genosha_sa" {
   type        = string
   description = "Terraform SA for Genosha project"
 }
+
+
+variable "wakanda_sa" {
+  type        = string
+  description = "Terraform SA for Wakanda project"
+}
+
+variable "tiqs_sa" {
+  type        = string
+  description = "Terraform SA for TIQS project"
+}
+
 
 # ------------------------------
 # Subnets
@@ -88,10 +113,10 @@ variable "tunnels" {
     region_dst = string
     asn_src    = number
     asn_dst    = number
-    tunnels    = map(object({
-      psk     = string
-      ip_src  = string
-      ip_dst  = string
+    tunnels = map(object({
+      psk    = string
+      ip_src = string
+      ip_dst = string
     }))
   }))
 }

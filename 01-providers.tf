@@ -3,7 +3,7 @@
 terraform {
   backend "gcs" {
     bucket      = "taaopsfirstterraformbucket"
-    prefix      = "terraform/state100125"
+    prefix      = "terraform/state101925"
     credentials = "taaops-e9943412868a.json"
   }
   required_providers {
@@ -32,7 +32,7 @@ provider "google" {
   alias                       = "taaops"
   project                     = var.balerica_project
   region                      = var.balerica_region
-  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sas[var.balerica_project]
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.balerica_project]
 }
 
 # Explicit provider for Genosha
@@ -40,8 +40,18 @@ provider "google" {
   alias                       = "genosha_ops"
   project                     = var.genosha_project
   region                      = var.genosha_region
-  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sas[var.genosha_project]
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.genosha_project]
 }
+
+# Explicit provider for Wakanda
+provider "google" {
+  alias                       = "wakanda_ops"
+  project                     = var.wakanda_project
+  region                      = var.wakanda_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.wakanda_project]
+}
+
+
 
 # TODO: For new spokes, copy the pattern above and assign alias = "<project_id>"
 
@@ -51,5 +61,5 @@ provider "google" {
 #   alias                       = "atlantis-ops"
 #   project                     = "atlantis-ops"
 #   region                      = var.atlantis_region
-#   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sas["atlantis-ops"]
+#   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id["atlantis-ops"]
 # }

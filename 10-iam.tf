@@ -3,20 +3,21 @@
 # IAM bindings (baseline + cross-project)
 # ============================================
 
-# Baseline roles → every SA in its own project
+# Baseline roles - every SA in its own project
 resource "google_project_iam_member" "baseline_roles" {
   for_each = local.baseline_bindings_map
 
-  project = each.value.project
+  project = each.value.project_id
   member  = "serviceAccount:${each.value.sa}"
   role    = each.value.role
 }
 
-# Cross-project impersonation (SA in project X → vpn_role in project Y)
+# Cross-project impersonation (SA in project X -> vpn_role in project Y)
 resource "google_project_iam_member" "cross_bindings" {
   for_each = local.cross_bindings_map
 
-  project = each.value.dst
+  project = each.value.dst_project
   member  = "serviceAccount:${each.value.sa}"
-  role    = "projects/${each.value.dst}/roles/vpn_role"
-} 
+  role    = "projects/${each.value.dst_project}/roles/${each.value.role_id}"
+}
+

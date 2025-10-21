@@ -13,13 +13,13 @@ module "balerica_vm" {
     google = google.taaops
   }
 
-  project                = var.balerica_project
-  zone                   = var.balerica_zone
-  instance_name          = "balerica-vm"
-  machine_type           = "n2-standard-2"
-  subnetwork             = module.balerica_subnet.subnet_id
-  startup_scripts        = var.startup_scripts
-  service_account_email  = var.balerica_sa
+  project               = var.balerica_project
+  zone                  = var.balerica_zone
+  instance_name         = "balerica-vm"
+  machine_type          = "n2-standard-2"
+  subnetwork            = module.balerica_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
+  service_account_email = var.balerica_sa
 }
 
 # ----------------------------------------------------------
@@ -32,11 +32,29 @@ module "genosha_vm" {
     google = google.genosha_ops
   }
 
-  project                = var.genosha_project
-  zone                   = var.genosha_zone
-  instance_name          = "genosha-vm"
-  machine_type           = "n2-standard-2"
-  subnetwork             = module.genosha_subnet.subnet_id
-  startup_scripts        = var.startup_scripts
-  service_account_email  = var.genosha_sa
+  project               = var.genosha_project
+  zone                  = var.genosha_zone
+  instance_name         = "genosha-vm"
+  machine_type          = "n2-standard-2"
+  subnetwork            = module.genosha_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
+  service_account_email = var.genosha_sa
+}
+
+
+module "wakanda_vm" {
+  source = "./modules/compute"
+
+  providers = {
+    google = google.wakanda_ops
+  }
+
+  project               = var.wakanda_project
+  zone                  = var.wakanda_zone
+  instance_name         = "wakanda-vm"
+  machine_type          = "n2-standard-2"
+  subnetwork            = module.wakanda_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
+  service_account_email = var.wakanda_sa
+
 }

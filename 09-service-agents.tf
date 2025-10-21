@@ -12,7 +12,7 @@
 This is the old old pattern where Google-managed default Compute Engine SAs handle networking resources.
 VPNs depended on the default Compute Engine SAs. 
 
-This has been replace with explicit Terraform SAs and impersonation. 
+This has been replaced with explicit Terraform SAs and impersonation. 
 Current Configuration (with impersonation + Terraform SAs):
   1. Now create / reference explicit Terraform SAs (terraform@taaops.iam.gserviceaccount.com, terraform@genosha-ops.iam.gserviceaccount.com).
   2. Bootstrap them with roleAdmin, create custom VPN roles, and add cross-project IAM bindings between them.

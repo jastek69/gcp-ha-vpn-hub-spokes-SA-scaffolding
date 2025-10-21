@@ -30,3 +30,14 @@ module "genosha_hub" {
   project = var.genosha_project
   name    = "genosha"
 }
+
+module "wakanda_hub" {
+  source = "./modules/hub"
+
+  providers = {
+    google = google.wakanda_ops
+  }
+
+  project = var.wakanda_project
+  name    = "wakanda"
+}

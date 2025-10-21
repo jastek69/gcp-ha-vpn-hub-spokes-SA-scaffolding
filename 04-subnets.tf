@@ -36,3 +36,19 @@ module "genosha_subnet" {
   network = module.genosha_vpc.vpc_self_link
   name    = "${var.genosha_project}-subnet"
 }
+
+
+module "wakanda_subnet" {
+  source = "./modules/subnet"
+
+  providers = {
+    google = google.wakanda_ops
+  }
+
+  project = var.wakanda_project
+  region  = var.wakanda_region
+  cidr    = var.subnet_cidrs["wakanda-ops"]
+  network = module.wakanda_vpc.vpc_self_link
+  name    = "${var.wakanda_project}-subnet"
+
+}

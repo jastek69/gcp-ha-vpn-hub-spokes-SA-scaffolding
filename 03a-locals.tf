@@ -3,29 +3,53 @@
 # Locals for IAM, VPN Tunnels, and Router Interfaces
 # ============================================================
 
-  # ------------------------------------------------------------
-  # Canonical map of project → Terraform SA email
-  # ------------------------------------------------------------
- 
- # ============================================
-# 03a-locals.tf
-# Central locals for VPCs, IAM, VPNs, Routers
-# ============================================
 
 locals {
   # -------------------------------------------------------------------
-  # Canonical map of project → Terraform SA email
+  # Project IDs keyed by logical project key (friendly name -> real ID)
+  # -------------------------------------------------------------------
+  project_ids = {
+    taaops      = var.balerica_project
+    genosha-ops = var.genosha_project
+    wakanda-ops = var.wakanda_project
+    # future spokes extend here
+  }
+
+  # -------------------------------------------------------------------
+  # Canonical map of logical project key -> Terraform SA email
   # -------------------------------------------------------------------
   spoke_sas = merge(
     var.spokes,
     {
-      (var.balerica_project) = var.balerica_sa
-      (var.genosha_project)  = var.genosha_sa
+      taaops      = var.balerica_sa
+      genosha-ops = var.genosha_sa
+      wakanda-ops = var.wakanda_sa
     }
   )
 
   # -------------------------------------------------------------------
-  # Baseline roles → expand into bindings
+  # Normalized spoke context: include real project IDs alongside emails
+  # -------------------------------------------------------------------
+  spoke_context = {
+    for key, sa in local.spoke_sas :
+    key => {
+      project_id = local.project_ids[key]
+      sa         = sa
+    }
+    if contains(keys(local.project_ids), key)
+  }
+
+  # Shortcut lookup: project ID -> Terraform SA email
+  spoke_sa_by_project_id = {
+    for _, ctx in local.spoke_context :
+    ctx.project_id => ctx.sa
+  }
+
+  # Shared custom role ID for cross-project VPN administration
+  vpn_role_id = "terraform_vpn_role"
+
+  # -------------------------------------------------------------------
+  # Baseline roles + expand into bindings
   # -------------------------------------------------------------------
   baseline_roles = toset([
     "roles/viewer",
@@ -34,12 +58,12 @@ locals {
   ])
 
   baseline_bindings = flatten([
-    for project, sa in local.spoke_sas : [
+    for key, ctx in local.spoke_context : [
       for role in local.baseline_roles : {
-        key     = "${project}-${role}"
-        project = project
-        sa      = sa
-        role    = role
+        key        = "${ctx.project_id}-${role}"
+        project_id = ctx.project_id
+        sa         = ctx.sa
+        role       = role
       }
     ]
   ])
@@ -52,14 +76,15 @@ locals {
   # Cross-project impersonation (vpn_role sharing)
   # -------------------------------------------------------------------
   cross_bindings = flatten([
-    for src, sa in local.spoke_sas : [
-      for dst, _ in local.spoke_sas : {
-        key = "${src}->${dst}"
-        src = src
-        dst = dst
-        sa  = sa
+    for src_key, src_ctx in local.spoke_context : [
+      for dst_key, dst_ctx in local.spoke_context : {
+        key         = "${src_ctx.project_id}->${dst_ctx.project_id}"
+        src_project = src_ctx.project_id
+        dst_project = dst_ctx.project_id
+        sa          = src_ctx.sa
+        role_id     = local.vpn_role_id
       }
-      if src != dst
+      if src_key != dst_key
     ]
   ])
 
@@ -73,6 +98,7 @@ locals {
   vpc_ids = {
     taaops      = module.balerica_vpc.vpc_id
     genosha-ops = module.genosha_vpc.vpc_id
+    wakanda-ops = module.wakanda_vpc.vpc_id
     # future spokes extend here
   }
 
@@ -82,17 +108,17 @@ locals {
   vpn_tunnels_flattened = flatten([
     for k, v in var.tunnels : [
       for tname, t in v.tunnels : {
-        tunnel_key  = "${k}-${tname}"   # e.g., balerica-genosha-t0
-        name        = tname
-        src         = v.src
-        dst         = v.dst
-        region_src  = v.region_src
-        region_dst  = v.region_dst
-        psk         = t.psk
-        ip_src      = t.ip_src
-        ip_dst      = t.ip_dst
-        asn_src     = v.asn_src
-        asn_dst     = v.asn_dst
+        tunnel_key = "${k}-${tname}" # e.g., balerica-genosha-t0
+        name       = tname
+        src        = v.src
+        dst        = v.dst
+        region_src = v.region_src
+        region_dst = v.region_dst
+        psk        = t.psk
+        ip_src     = t.ip_src
+        ip_dst     = t.ip_dst
+        asn_src    = v.asn_src
+        asn_dst    = v.asn_dst
       }
     ]
   ])
@@ -105,7 +131,10 @@ locals {
   # -------------------------------------------------------------------
   # Tunnel participants (all unique projects)
   # -------------------------------------------------------------------
-  tunnel_projects = toset(flatten([for _, v in var.tunnels : [v.src, v.dst]]))
+  tunnel_projects = toset([
+    for project in flatten([for _, v in var.tunnels : [v.src, v.dst]]) :
+    project if contains(keys(local.project_ids), project)
+  ])
 
   # Map tunnel label ("t0"/"t1") to HA gateway interface index
   interface_index = {
@@ -113,8 +142,8 @@ locals {
     t1 = 1
     t2 = 0
     t3 = 1
-  # predefine more if you will scale further
-}
+    # predefine more if you will scale further
+  }
 
   # -------------------------------------------------------------------
   # Flattened router interfaces (bind tunnels to routers)
@@ -122,16 +151,19 @@ locals {
   router_flattened = flatten([
     for k, v in var.tunnels : [
       for tname, t in v.tunnels : {
-        router_key = "${k}-${tname}"
-        src        = v.src
-        dst        = v.dst
-        region     = v.region_src
-        router     = "${v.src}-router"
-        ip_range   = t.ip_src      # your 169.254.x.x/30 goes here
-        tunnel     = "${v.src}-to-${v.dst}-${tname}"
-        peer_asn   = v.asn_dst
-        name       = tname
+        router_key     = "${k}-${tname}"
+        src_key        = v.src
+        dst_key        = v.dst
+        src_project_id = local.project_ids[v.src]
+        dst_project_id = local.project_ids[v.dst]
+        region         = v.region_src
+        router         = "${v.src}-router"
+        ip_range       = t.ip_src # your 169.254.x.x/30 goes here
+        tunnel         = "${v.src}-to-${v.dst}-${tname}"
+        peer_asn       = v.asn_dst
+        name           = tname
       }
+      if contains(keys(local.project_ids), v.src) && contains(keys(local.project_ids), v.dst)
     ]
   ])
 
@@ -139,4 +171,3 @@ locals {
     for r in local.router_flattened : r.router_key => r
   }
 }
-
