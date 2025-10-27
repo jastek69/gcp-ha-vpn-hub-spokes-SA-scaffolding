@@ -36,6 +36,13 @@ resource "google_compute_vpn_tunnel" "all" {
     "wakanda-balerica-t1" = local.vpn_tunnels_map["wakanda-balerica-t1"]
 
 
+    # TIQS-Balerica pairs
+    "balerica-tiqs-t0" = local.vpn_tunnels_map["balerica-tiqs-t0"]
+    "balerica-tiqs-t1" = local.vpn_tunnels_map["balerica-tiqs-t1"]
+
+    "tiqs-balerica-t0" = local.vpn_tunnels_map["tiqs-balerica-t0"]
+    "tiqs-balerica-t1" = local.vpn_tunnels_map["tiqs-balerica-t1"]
+    
     /*
     "genosha-wakanda-t0"  = local.vpn_tunnels_map["genosha-wakanda-t0"]
     "genosha-wakanda-t1"  = local.vpn_tunnels_map["genosha-wakanda-t1"]

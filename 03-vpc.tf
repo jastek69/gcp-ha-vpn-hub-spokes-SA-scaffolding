@@ -45,3 +45,15 @@ module "wakanda_vpc" {
   project = var.wakanda_project
   name    = "${var.wakanda_project}-vpc"
 }
+
+
+module "tiqs_vpc" {
+  source = "./modules/vpc"
+
+  providers = {
+    google = google.tiqs_ops
+  }
+
+  project = var.tiqs_project
+  name    = "${var.tiqs_project}-vpc"
+}

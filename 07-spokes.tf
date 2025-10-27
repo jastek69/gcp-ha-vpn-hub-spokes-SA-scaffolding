@@ -54,3 +54,21 @@ module "wakanda_spoke" {
   ]
 
 }
+
+
+module "tiqs_spoke" {
+  source = "./modules/spoke"
+
+  providers = {
+    google = google.tiqs_ops
+  }
+
+  project = var.tiqs_project
+  region  = var.tiqs_region
+  name    = "tiqs"
+  hub_id  = module.tiqs_hub.hub_id
+  vpn_tunnel_uris = [
+    google_compute_vpn_tunnel.all["tiqs-balerica-t0"].self_link,
+    google_compute_vpn_tunnel.all["tiqs-balerica-t1"].self_link,
+  ]   
+}

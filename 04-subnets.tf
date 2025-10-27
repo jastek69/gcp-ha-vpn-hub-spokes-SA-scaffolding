@@ -52,3 +52,19 @@ module "wakanda_subnet" {
   name    = "${var.wakanda_project}-subnet"
 
 }
+
+
+module "tiqs_subnet" {
+  source = "./modules/subnet"
+
+  providers = {
+    google = google.tiqs_ops
+  }
+
+  project = var.tiqs_project
+  region  = var.tiqs_region
+  cidr    = var.subnet_cidrs["tiqs-ops"]
+  network = module.tiqs_vpc.vpc_self_link
+  name    = "${var.tiqs_project}-subnet"
+
+}

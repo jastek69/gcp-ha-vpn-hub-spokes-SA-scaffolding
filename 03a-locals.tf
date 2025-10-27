@@ -12,6 +12,7 @@ locals {
     taaops      = var.balerica_project
     genosha-ops = var.genosha_project
     wakanda-ops = var.wakanda_project
+    tiqs-ops    = var.tiqs_project
     # future spokes extend here
   }
 
@@ -24,6 +25,7 @@ locals {
       taaops      = var.balerica_sa
       genosha-ops = var.genosha_sa
       wakanda-ops = var.wakanda_sa
+      tiqs-ops    = var.tiqs_sa
     }
   )
 
@@ -99,6 +101,7 @@ locals {
     taaops      = module.balerica_vpc.vpc_id
     genosha-ops = module.genosha_vpc.vpc_id
     wakanda-ops = module.wakanda_vpc.vpc_id
+    tiqs-ops    = module.tiqs_vpc.vpc_id
     # future spokes extend here
   }
 

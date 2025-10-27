@@ -20,6 +20,7 @@ resource "google_compute_router" "routers" {
       local.project_ids[each.value] == var.balerica_project ? 65501 :
       local.project_ids[each.value] == var.genosha_project ? 65515 :
       local.project_ids[each.value] == var.wakanda_project ? 65520 :
+      local.project_ids[each.value] == var.tiqs_project    ? 65530 :
       65000 # fallback ASN for future spokes
     )
   }

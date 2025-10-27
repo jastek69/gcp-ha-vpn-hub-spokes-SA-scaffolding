@@ -117,10 +117,53 @@ gcloud projects add-iam-policy-binding taaops \
   --role="roles/iam.roleAdmin"
 ```
 
-#
+# 
 
 
+# Project Naming Notes
+
+Nameing convention for .tfvars
+
+The original project name will be used to define `***projectname***-ops` as the key in the impersonation/region/subnet/tunnel maps: e.g gcp-project-name -> projectname-ops.
+* Keep `"***projectname***"` in the startup script map, and the actual project id lives in the 'projectname_*' variables.
+* **Actual project vars** (***projectname***_project = "original-project-name", etc.) stay in the “Projects + Service Accounts” block. Everything that talks to GCP (providers, modules) ultimately uses these real IDs.
+
+```
+# Under Project and Service Accounts:
+wakanda_project = "***GCP project name***" # us-west2 Los Angeles
+wakanda_region  = "us-west2"
+wakanda_zone    = "us-west2-a"
+wakanda_sa      = "project-terraform@project.iam.gserviceaccount.com"
+```
+
+* **Logical keys** (e.g. projectname-ops) are the friendly handles the locals use to glue things together. The key must appear everywhere the locals expect it:
+  * local.project_ids
+  * var.spokes and var.spoke_regions
+  * var.subnet_cidrs
+  * in every tunnel src/dst.
+
 #
+That way local.project_ids["project-ops"] resolves to the real project id and all downstream lookups work.
+
+* **Provider alias** (google.project_ops) is just Terraform syntax so each module can pick the right credentials. It points at var.tiqs_project, so it follows whatever actual project id you set.
+
+* **Startup scripts map** is the special case: in modules/compute/main.tf we index the map with the real project id (var.project), so leave the key as "class-6-5-tiqs" there.
+
+
+Example:
+
+Under Project and Service Accounts:
+```
+wakanda_project = "***GCP project name***" # us-west2 Los Angeles
+wakanda_region  = "us-west2"
+wakanda_zone    = "us-west2-a"
+wakanda_sa      = "project-terraform@project.iam.gserviceaccount.com"
+```
+
+```
+"wakanda-ops" = "<project-terraform@project>.iam.gserviceaccount.com"
+```
+
 
 # NETWORK CONFIGURATION
 
@@ -615,15 +658,6 @@ roles/iam.roleAdmin```
     → Your SA is left with only the custom role assignments.
 
 ---
-
-
-
-
-
-
-
-
-
 
 
 #

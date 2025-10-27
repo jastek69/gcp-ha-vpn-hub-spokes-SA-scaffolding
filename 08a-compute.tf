@@ -58,3 +58,19 @@ module "wakanda_vm" {
   service_account_email = var.wakanda_sa
 
 }
+
+module "tiqs_vm" {
+  source = "./modules/compute"
+
+  providers = {
+    google = google.tiqs_ops
+  }
+
+  project               = var.tiqs_project
+  zone                  = var.tiqs_zone
+  instance_name         = "tiqs-vm"
+  machine_type          = "n2-standard-2"
+  subnetwork            = module.tiqs_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
+  service_account_email = var.tiqs_sa
+}

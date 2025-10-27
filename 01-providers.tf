@@ -52,6 +52,12 @@ provider "google" {
 }
 
 
+provider "google" {
+  alias                       = "tiqs_ops"
+  project                     = var.tiqs_project
+  region                      = var.tiqs_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.tiqs_project]
+}
 
 # TODO: For new spokes, copy the pattern above and assign alias = "<project_id>"
 

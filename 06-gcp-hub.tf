@@ -41,3 +41,15 @@ module "wakanda_hub" {
   project = var.wakanda_project
   name    = "wakanda"
 }
+
+
+module "tiqs_hub" {
+  source = "./modules/hub"
+
+  providers = {
+    google = google.tiqs_ops
+  }
+
+  project = var.tiqs_project
+  name    = "tiqs"
+}
