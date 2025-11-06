@@ -7,7 +7,7 @@
 # Balerica Subnet
 # ----------------------
 module "balerica_subnet" {
-  source = "./modules/subnet"
+  source = "../modules/subnet"
 
   providers = {
     google = google.taaops
@@ -24,10 +24,10 @@ module "balerica_subnet" {
 # Genosha Subnet
 # ----------------------
 module "genosha_subnet" {
-  source = "./modules/subnet"
+  source = "../modules/subnet"
 
   providers = {
-    google = google.genosha_ops
+    google = google.genosha-ops
   }
 
   project = var.genosha_project
@@ -39,10 +39,10 @@ module "genosha_subnet" {
 
 
 module "wakanda_subnet" {
-  source = "./modules/subnet"
+  source = "../modules/subnet"
 
   providers = {
-    google = google.wakanda_ops
+    google = google.wakanda-ops
   }
 
   project = var.wakanda_project
@@ -55,10 +55,10 @@ module "wakanda_subnet" {
 
 
 module "tiqs_subnet" {
-  source = "./modules/subnet"
+  source = "../modules/subnet"
 
   providers = {
-    google = google.tiqs_ops
+    google = google.tiqs-ops
   }
 
   project = var.tiqs_project

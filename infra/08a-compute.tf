@@ -7,7 +7,7 @@
 # Balerica VM
 # ----------------------------------------------------------
 module "balerica_vm" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   providers = {
     google = google.taaops
@@ -20,16 +20,17 @@ module "balerica_vm" {
   subnetwork            = module.balerica_subnet.subnet_id
   startup_scripts       = var.startup_scripts
   service_account_email = var.balerica_sa
+  project_key           = "taaops"
 }
 
 # ----------------------------------------------------------
 # Genosha VM
 # ----------------------------------------------------------
 module "genosha_vm" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   providers = {
-    google = google.genosha_ops
+    google = google.genosha-ops
   }
 
   project               = var.genosha_project
@@ -39,14 +40,15 @@ module "genosha_vm" {
   subnetwork            = module.genosha_subnet.subnet_id
   startup_scripts       = var.startup_scripts
   service_account_email = var.genosha_sa
+  project_key           = "genosha-ops"
 }
 
 
 module "wakanda_vm" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   providers = {
-    google = google.wakanda_ops
+    google = google.wakanda-ops
   }
 
   project               = var.wakanda_project
@@ -56,14 +58,15 @@ module "wakanda_vm" {
   subnetwork            = module.wakanda_subnet.subnet_id
   startup_scripts       = var.startup_scripts
   service_account_email = var.wakanda_sa
+  project_key           = "wakanda-ops"
 
 }
 
 module "tiqs_vm" {
-  source = "./modules/compute"
+  source = "../modules/compute"
 
   providers = {
-    google = google.tiqs_ops
+    google = google.tiqs-ops
   }
 
   project               = var.tiqs_project
@@ -73,4 +76,5 @@ module "tiqs_vm" {
   subnetwork            = module.tiqs_subnet.subnet_id
   startup_scripts       = var.startup_scripts
   service_account_email = var.tiqs_sa
+  project_key           = "class-6-5-tiqs"
 }

@@ -1,0 +1,67 @@
+# Providers
+
+terraform {
+  backend "gcs" {
+    bucket      = "taaopsfirstterraformbucket"
+    prefix      = "terraform/bootstrap-state"
+    credentials = "../taaops-e9943412868a.json"
+  }
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 6.36.0"
+    }
+  }
+}
+
+############################################
+# 01-providers.tf
+# Explicit provider aliases per project
+############################################
+
+# Default provider → use Balerica as the hub project
+provider "google" {
+  project                     = var.balerica_project
+  region                      = var.balerica_region
+  impersonate_service_account = var.bootstrap_mode ? null : var.balerica_sa
+}
+
+
+# Explicit provider for Balerica
+provider "google" {
+  alias                       = "taaops"
+  project                     = var.balerica_project
+  region                      = var.balerica_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.balerica_project]
+}
+
+# Hyphenated provider aliases matching project IDs for spokes
+provider "google" {
+  alias                       = "genosha-ops"
+  project                     = var.genosha_project
+  region                      = var.genosha_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.genosha_project]
+}
+
+provider "google" {
+  alias                       = "wakanda-ops"
+  project                     = var.wakanda_project
+  region                      = var.wakanda_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.wakanda_project]
+}
+
+provider "google" {
+  alias                       = "tiqs-ops"
+  project                     = var.tiqs_project
+  region                      = var.tiqs_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.tiqs_project]
+}
+
+# Future expansion: add Atlantis, Dale, Tiqs here as needed
+# Example:
+# provider "google" {
+#   alias                       = "atlantis-ops"
+#   project                     = "atlantis-ops"
+#   region                      = var.atlantis_region
+#   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id["atlantis-ops"]
+# }

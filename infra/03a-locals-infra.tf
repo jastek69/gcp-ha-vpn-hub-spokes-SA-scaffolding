@@ -1,5 +1,5 @@
 # ============================================================
-# 03a-locals.tf
+# 03a-locals-infra.tf
 # Locals for IAM, VPN Tunnels, and Router Interfaces
 # ============================================================
 
@@ -9,90 +9,30 @@ locals {
   # Project IDs keyed by logical project key (friendly name -> real ID)
   # -------------------------------------------------------------------
   project_ids = {
-    taaops      = var.balerica_project
-    genosha-ops = var.genosha_project
-    wakanda-ops = var.wakanda_project
-    tiqs-ops    = var.tiqs_project
+    taaops          = var.balerica_project
+    genosha-ops     = var.genosha_project
+    wakanda-ops     = var.wakanda_project      # preferred *-ops alias
+    class-6-5-tiqs  = var.tiqs_project
+    tiqs-ops        = var.tiqs_project         # preferred *-ops alias for TIQS
     # future spokes extend here
   }
 
   # -------------------------------------------------------------------
   # Canonical map of logical project key -> Terraform SA email
   # -------------------------------------------------------------------
-  spoke_sas = merge(
-    var.spokes,
-    {
-      taaops      = var.balerica_sa
-      genosha-ops = var.genosha_sa
-      wakanda-ops = var.wakanda_sa
-      tiqs-ops    = var.tiqs_sa
+  spoke_sas = {
+      taaops            = var.balerica_sa
+      genosha-ops       = var.genosha_sa
+      wakanda-ops       = var.wakanda_sa
+      tiqs-ops          = var.tiqs_sa
     }
-  )
-
-  # -------------------------------------------------------------------
-  # Normalized spoke context: include real project IDs alongside emails
-  # -------------------------------------------------------------------
-  spoke_context = {
+  
+spoke_sa_by_project_id = {
     for key, sa in local.spoke_sas :
-    key => {
-      project_id = local.project_ids[key]
-      sa         = sa
-    }
-    if contains(keys(local.project_ids), key)
+    local.project_ids[key] => sa
   }
 
-  # Shortcut lookup: project ID -> Terraform SA email
-  spoke_sa_by_project_id = {
-    for _, ctx in local.spoke_context :
-    ctx.project_id => ctx.sa
-  }
 
-  # Shared custom role ID for cross-project VPN administration
-  vpn_role_id = "terraform_vpn_role"
-
-  # -------------------------------------------------------------------
-  # Baseline roles + expand into bindings
-  # -------------------------------------------------------------------
-  baseline_roles = toset([
-    "roles/viewer",
-    "roles/compute.networkAdmin",
-    "roles/networkconnectivity.admin",
-  ])
-
-  baseline_bindings = flatten([
-    for key, ctx in local.spoke_context : [
-      for role in local.baseline_roles : {
-        key        = "${ctx.project_id}-${role}"
-        project_id = ctx.project_id
-        sa         = ctx.sa
-        role       = role
-      }
-    ]
-  ])
-
-  baseline_bindings_map = {
-    for b in local.baseline_bindings : b.key => b
-  }
-
-  # -------------------------------------------------------------------
-  # Cross-project impersonation (vpn_role sharing)
-  # -------------------------------------------------------------------
-  cross_bindings = flatten([
-    for src_key, src_ctx in local.spoke_context : [
-      for dst_key, dst_ctx in local.spoke_context : {
-        key         = "${src_ctx.project_id}->${dst_ctx.project_id}"
-        src_project = src_ctx.project_id
-        dst_project = dst_ctx.project_id
-        sa          = src_ctx.sa
-        role_id     = local.vpn_role_id
-      }
-      if src_key != dst_key
-    ]
-  ])
-
-  cross_bindings_map = {
-    for b in local.cross_bindings : b.key => b
-  }
 
   # -------------------------------------------------------------------
   # VPC IDs keyed by project (from VPC modules)
@@ -104,6 +44,8 @@ locals {
     tiqs-ops    = module.tiqs_vpc.vpc_id
     # future spokes extend here
   }
+
+
 
   # -------------------------------------------------------------------
   # Flattened VPN tunnels (from var.tunnels HA definition)

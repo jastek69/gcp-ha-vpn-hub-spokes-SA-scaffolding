@@ -10,7 +10,7 @@
 ############################################################
 
 module "balerica_hub" {
-  source = "./modules/hub"
+  source = "../modules/hub"
 
   providers = {
     google = google.taaops
@@ -21,10 +21,10 @@ module "balerica_hub" {
 }
 
 module "genosha_hub" {
-  source = "./modules/hub"
+  source = "../modules/hub"
 
   providers = {
-    google = google.genosha_ops
+    google = google.genosha-ops
   }
 
   project = var.genosha_project
@@ -32,10 +32,10 @@ module "genosha_hub" {
 }
 
 module "wakanda_hub" {
-  source = "./modules/hub"
+  source = "../modules/hub"
 
   providers = {
-    google = google.wakanda_ops
+    google = google.wakanda-ops
   }
 
   project = var.wakanda_project
@@ -44,10 +44,10 @@ module "wakanda_hub" {
 
 
 module "tiqs_hub" {
-  source = "./modules/hub"
+  source = "../modules/hub"
 
   providers = {
-    google = google.tiqs_ops
+    google = google.tiqs-ops
   }
 
   project = var.tiqs_project

@@ -46,6 +46,16 @@ variable "service_account_email" {
   description = "Service account email for the VM"
 }
 
+variable "project_key" {
+  type        = string
+  description = "Logical project key used for lookups (e.g., taaops, genosha-ops, wakanda-ops). If null, falls back to var.project."
+  default     = null
+}
+
+locals {
+  startup_key = coalesce(var.project_key, var.project)
+}
+
 resource "google_compute_instance" "vm" {
   name         = var.instance_name
   project      = var.project
@@ -62,7 +72,9 @@ resource "google_compute_instance" "vm" {
     subnetwork = var.subnetwork
   }
 
-  metadata_startup_script = file("${path.root}/${var.startup_scripts[var.project]}")
+  # startup_scripts paths are repo-root relative (e.g., scripts/startup/foo.sh)
+  # When running from the infra layer (root = infra/), step up one level
+  metadata_startup_script = file("${abspath(path.root)}/../${var.startup_scripts[local.startup_key]}")
 
   service_account {
     email  = var.service_account_email

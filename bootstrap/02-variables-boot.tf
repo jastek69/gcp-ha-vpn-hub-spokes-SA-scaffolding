@@ -1,6 +1,7 @@
 # ==============================================================
 # variables.tf
-# Centralized variable definitions for Hub/Spoke VPN environment
+# Variables for bootstrap layer
+# IAM bindings, service accounts, roles
 # ==============================================================
 
 #########################################
@@ -79,6 +80,7 @@ variable "tiqs_sa" {
   description = "Terraform SA for TIQS project"
 }
 
+/* to be removed later - not used in bootstrap layer
 
 # ------------------------------
 # Subnets
@@ -88,9 +90,13 @@ variable "subnet_cidrs" {
   description = "Map of project → subnet CIDR"
 }
 
+*/
+
+
 # ------------------------------
 # Spokes
 # ------------------------------
+
 variable "spokes" {
   type        = map(string)
   description = "Map of project → Terraform SA"
@@ -101,6 +107,16 @@ variable "spoke_regions" {
   description = "Map of project → region"
 }
 
+# bootstrap/02-variables-boot.tf
+variable "extra_bootstrap_spokes" {
+  description = "Optional additional project -> SA mappings (e.g. { new-spoke = \"sa@new-spoke.iam.gserviceaccount.com\" })"
+  type        = map(string)
+  default     = {}
+}
+
+
+
+/*
 # ------------------------------
 # VPN Tunnels
 # ------------------------------
@@ -130,3 +146,7 @@ variable "startup_scripts" {
   description = "Map of project → startup script path"
   type        = map(string)
 }
+
+
+
+*/

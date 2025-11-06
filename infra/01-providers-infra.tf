@@ -3,8 +3,8 @@
 terraform {
   backend "gcs" {
     bucket      = "taaopsfirstterraformbucket"
-    prefix      = "terraform/state101925"
-    credentials = "taaops-e9943412868a.json"
+    prefix      = "terraform/infra-state"
+    credentials = "../taaops-e9943412868a.json"
   }
   required_providers {
     google = {
@@ -15,7 +15,8 @@ terraform {
 }
 
 ############################################
-# 01-providers.tf
+# 01-providers-infra.tf
+# Infrastructure provider configurations
 # Explicit provider aliases per project
 ############################################
 
@@ -35,17 +36,17 @@ provider "google" {
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.balerica_project]
 }
 
-# Explicit provider for Genosha
+# (removed underscore-style aliases; use hyphenated ones below)
+
 provider "google" {
-  alias                       = "genosha_ops"
+  alias                       = "genosha-ops"
   project                     = var.genosha_project
   region                      = var.genosha_region
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.genosha_project]
 }
 
-# Explicit provider for Wakanda
 provider "google" {
-  alias                       = "wakanda_ops"
+  alias                       = "wakanda-ops"
   project                     = var.wakanda_project
   region                      = var.wakanda_region
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.wakanda_project]
@@ -53,13 +54,18 @@ provider "google" {
 
 
 provider "google" {
-  alias                       = "tiqs_ops"
+  alias                       = "class-6-5-tiqs"
   project                     = var.tiqs_project
   region                      = var.tiqs_region
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.tiqs_project]
 }
 
-# TODO: For new spokes, copy the pattern above and assign alias = "<project_id>"
+provider "google" {
+  alias                       = "tiqs-ops"
+  project                     = var.tiqs_project
+  region                      = var.tiqs_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.tiqs_project]
+}
 
 # Future expansion: add Atlantis, Dale, Tiqs here as needed
 # Example:

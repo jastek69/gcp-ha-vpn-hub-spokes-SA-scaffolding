@@ -7,7 +7,7 @@
 # Balerica VPC
 # ----------------------
 module "balerica_vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
 
   providers = {
     google = google.taaops
@@ -21,10 +21,10 @@ module "balerica_vpc" {
 # Genosha VPC
 # ----------------------
 module "genosha_vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
 
   providers = {
-    google = google.genosha_ops
+    google = google.genosha-ops
   }
 
   project = var.genosha_project
@@ -36,10 +36,10 @@ module "genosha_vpc" {
 # Wakanda VPC
 # ----------------------
 module "wakanda_vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
 
   providers = {
-    google = google.wakanda_ops
+    google = google.wakanda-ops
   }
 
   project = var.wakanda_project
@@ -48,10 +48,10 @@ module "wakanda_vpc" {
 
 
 module "tiqs_vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
 
   providers = {
-    google = google.tiqs_ops
+    google = google.tiqs-ops
   }
 
   project = var.tiqs_project

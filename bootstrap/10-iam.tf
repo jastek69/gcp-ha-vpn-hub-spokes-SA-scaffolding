@@ -19,5 +19,11 @@ resource "google_project_iam_member" "cross_bindings" {
   project = each.value.dst_project
   member  = "serviceAccount:${each.value.sa}"
   role    = "projects/${each.value.dst_project}/roles/${each.value.role_id}"
-}
 
+  depends_on = [
+    google_project_iam_custom_role.vpn_role_taaops,
+    google_project_iam_custom_role.vpn_role_genosha,
+    google_project_iam_custom_role.vpn_role_wakanda,
+    google_project_iam_custom_role.vpn_role_tiqs,
+  ]
+}
