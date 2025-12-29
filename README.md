@@ -1,39 +1,7 @@
-### This Global Enterprise-Level Infratructure contains the following:
-
-Multi-region VMs across the globe ✅
-Cross-project VPN tunnels with HA ✅
-BGP peering between all spokes ✅
-Custom IAM roles and cross-project permissions (no need for json files) ✅
-Network Connectivity Hub integration ✅
-
-
-Summary:
-6-project global infrastructure spanning 4 continents (Asia, North America, South America, Europe)
-Complete hub-spoke VPN mesh with BGP routing for full connectivity
-Terraform scaffolding to handle proper bootstrap/infrastructure separation
-Service account impersonation for secure multi-project deployment
-Automated scripts that handle the complexity seamlessly
-Modular architecture that's easily extensible
-
-
-# Scaffolding
-
-This project is divided into two primary area decoupling the authentication process from the building of the network framework:
-  
-  Boostrap: handles the provisioning and authentication. This will only need to be run at the start of a project or when
-  
-  Infra (infrastucture): handles the building of the network infrastrucutre. Once bootstrapping has been completed and the proper roles have been provided the infrsatructure can be built or destroyed without the need to remove the permsissions that have been established. 
-
-When adding new accounts to expand the network it is necessary to run Bootstrap first and then add the new network resources through Infra.
-
-
-# Hub-and-Spoke VPN Terraform Setup
-
-This repository provisions a hub-and-spoke HA VPN environment in Google Cloud using Scaffold Terraform modules with env and variables. It includes projects, Modules, IAM roles, HA VPN gateways, tunnels, Cloud Routers tf files, and startup scripts. This is a secure configuration with separate deployments for bootstrap mode and an infrastructure mode. Variables are set inside .tfvars and .env so there is no need for a JSON file. It is also configured to be scalable as well as being deployable within CI/CD pipelines. This can be easily done by setting the account within .tfvars to either the CI/CD account the user account.
-
-#
+# ARMAGEDDON 6.5 Brotherhood of Evil jerMutants - Wolfpack
 
 ### Authors
+
 John Sweeney
 T.I.Q.S.
 Michael Dale
@@ -43,9 +11,70 @@ Benji
 Royce Billot
 
 
+# This Global Enterprise-Level Infratructure contains the following
+Multi-region VMs across the globe ✅
+Cross-project VPN tunnels with HA ✅
+BGP peering between all spokes ✅
+Custom IAM roles and cross-project permissions (no need for json files) ✅
+Network Connectivity Hub integration ✅
+
+Summary:
+6-project global infrastructure spanning 4 continents (Asia, North America, South America, Europe)
+Complete hub-spoke VPN mesh with BGP routing for full connectivity
+Terraform scaffolding to handle proper bootstrap/infrastructure separation
+Service account impersonation for secure multi-project deployment
+Automated scripts that handle the complexity seamlessly
+Modular architecture that's easily extensible
+
+## Scaffolding
+
+This project is divided into two primary area decoupling the authentication process from the building of the network framework:
+  
+- Boostrap: seeds IAM + roles. Handles the provisioning and authentication - IAM custom roles and permissions. This will only need to be run at the start of a project or when new accounts and additional resources need to be added. Once everything has been bootstrapped the infrastructure can be started or stopped via the infra script or Makefile.
+  
+- Infra (infrastucture): compute and networking. Tandles the building of the network infrastrucutre - compute and network resources. Once bootstrapping has been completed which builds the proper accounts with permissions the infrsatructure can be built or destroyed without the need to remove the account details.
+
+***NOTE:*** When adding new accounts to expand the network it is necessary to run Bootstrap first and then add the new network resources through Infra.
+
+## Hub-and-Spoke VPN Terraform Setup
+
+This repository provisions a hub-and-spoke HA VPN environment in Google Cloud using Scaffold Terraform modules with .env and variables that remain hidden. It includes projects, Modules, IAM roles, HA VPN gateways, tunnels, Cloud Routers tf files, and startup scripts. This is a secure configuration with separate deployments for bootstrap mode and an infrastructure mode. Variables are set inside .tfvars and .env so there is no need for a JSON file. It is also configured to be scalable as well as being deployable within CI/CD pipelines. This can be easily done by setting the account within .tfvars to either the CI/CD account the user account.
+
 #
 
+
+# Repos and build version
+
+## Armageddon 6.5
+Final scaffolding - Armageddon repo:
+[scaffolding](https://github.com/jastek69/gcp-ha-vpn-hub-spokes-SA-scaffolding.git)
+
+workspace repo:
+<https://github.com/jastek69/gcp-ha-vpn-hub-spokes>
+
+
+## Task 3 Submission
+
+### Michael Dale Armageddon Task 3 Repo
+- <https://github.com/MichaelDale1/GCP-Armageddon-2025-Dale/tree/Armageddon_Task_3>
+
+### Cassiem Armageddon Task 3 Repo
+- <https://github.com/kazapes/GCPArmageddon2025-cass.git>
+
+
+### Uriah Victorious Armageddon Task 3 Repo
+- <https://github.com/UriahVictorious/gcp-be-a-man-level-5>
+
+### Benji Armageddon Task 3 Repo
+- <https://github.com/Newest-IT-Bro/Benji-Armageddon-Task-3-Repo.git>
+
+### Royce Billiot Armageddon Task 3 Repo
+- <https://github.com/Rbilli51614/GCP-Armageddon-Task-3.git>
+
+
+
 ### Resources
+
 Authentication Methods at Google
 [text](https://cloud.google.com/docs/authentication)
 
@@ -73,176 +102,243 @@ Three different resources help you manage your IAM policy for a service account.
 
 **`google_service_account_iam_binding`** resources **can be** used in conjunction with **`google_service_account_iam_member`** resources **only if** they do not grant privilege to the same role.
 
-
 Scaffolding
 [text](https://jiminbyun.medium.com/platform-engineering-starter-kit-series-repository-scaffolding-minimal-infra-bootstrap-2-5a9034444219)
 
-
 CODEX and Github CoPilot
 
-
-# Repos and build version:
-
-
-## Task 3 Submission:
-### Michael Dale Armageddon Task 3 Repo
-
-- https://github.com/MichaelDale1/GCP-Armageddon-2025-Dale/tree/Armageddon_Task_3
-
-### Cassiem Armageddon Task 3 Repo
-
-- https://github.com/kazapes/GCPArmageddon2025-cass.git
-- Cass currently can’t edit. Posted on his behalf by Michael Dale.
-
-### Uriah Victorious Armageddon Task 3 Repo
-
-- https://github.com/UriahVictorious/gcp-be-a-man-level-5
-
-### Benji Armageddon Task 3 Repo
-
-- https://github.com/Newest-IT-Bro/Benji-Armageddon-Task-3-Repo.git
-
-### Royce Billiot Armageddon Task 3 Repo
-
-https://github.com/Rbilli51614/GCP-Armageddon-Task-3.git
-
-
-
-## Armageddon 6.5
-The start:
-https://github.com/jastek69/gcp-ha-vpn-hub-spokes
-
-
-Final scaffolding:
-[scaffolding](https://github.com/jastek69/gcp-ha-vpn-hub-spokes-SA-scaffolding.git)
-
-
+#
 
 # Project Details
+
 ## Service Account Impersonation
 
 How this works:
 
-* When you run Terraform, the active gcloud user (ADC) is used by default.
-* If var.balerica_sa or var.genosha_sa are set, Terraform will impersonate those service accounts using your ADC credentials.
-* This avoids ever downloading or storing JSON keys - No JSON files are needed locally.
-* In CI/CD, you can do the same with Workload Identity Federation — no keys, just impersonation.
-* You authenticate with gcloud auth login (or gcloud auth application-default login).
-* Terraform uses your/ active credentials to impersonate the service accounts in each project.
-* If you later rotate or recreate the service account keys, nothing changes in Terraform — it always impersonates.
+- When you run Terraform, the active gcloud user (ADC) is used by default.
+- If var.balerica_sa or var.genosha_sa are set, Terraform will impersonate those service accounts using your ADC credentials.
+- This avoids ever downloading or storing JSON keys - No JSON files are needed locally.
+- In CI/CD, you can do the same with Workload Identity Federation — no keys, just impersonation.
+- You authenticate with gcloud auth login (or gcloud auth application-default login).
+- Terraform uses your/ active credentials to impersonate the service accounts in each project.
+- If you later rotate or recreate the service account keys, nothing changes in Terraform — it always impersonates.
 
 #
 
 ### Security
 
-* No JSON keys.
-* You can grant temporary impersonation rights to human users or CI/CD identities.
-* The impersonated SA is what Terraform actually uses to create VPN, routers, IAM, etc.
+- No JSON keys.
+- You can grant temporary impersonation rights to human users or CI/CD identities.
+- The impersonated SA is what Terraform actually uses to create VPN, routers, IAM, etc.
 
 Utilizing the service account for terraform (as opposed to Compute) through Service Account Impersonation eliminates the need for a JSON (the use of service account keys). [See documentation](https://cloud.google.com/iam/docs/service-account-impersonation)
 
 You can use service account impersonation to set up a local Application Default Credentials (ADC) file. Client libraries that support impersonation can use those credentials automatically. Local ADC files created by using impersonation are supported in the following languages:
-* C#
-* Go
-* Java
-* Node.js
-* Python
+- C#
+- Go
+- Java
+- Node.js
+- Python
 
 #
 
-# Setup Instructions
 
-## Scripts - Quick Start
-In order ease the use of steps required to poperly deploy this environment using scaffolding a Bootstrap script and Infra (Infrastucture) scripts can be used. 
-Each 
-All commands assume you run from the repo root.
+## 1. Install Requirements
 
-### bootstrap.sh
-- Seeds IAM bindings/custom roles across projects.
-- Apply: `./scripts/bootstrap.sh apply`
-- Destroy (optional; wipes bootstrap IAM/service accounts): `./scripts/bootstrap.sh destroy`
+    * Terraform: ≥ 1.3
+    * gcloud CLI: gcloud auth application-default login
+    * Project APIs, Service Accounts with Application Default Credentials: see below
 
-### infra.sh
-- Builds compute + networking.
-- Apply with tfvars and bootstrap_mode=false: `./scripts/infra.sh apply`
-- Destroy compute/network only (keeps bootstrap IAM intact): `./scripts/infra.sh destroy`
+## 2. Prerequisite: Service Accounts Details
 
-### Permissions needed for the operator (typical Owner-level set)
-- compute.admin, compute.instanceAdmin.v1, compute.networkAdmin, compute.osLogin, compute.viewer
-- iam.roleAdmin, iam.serviceAccountUser, resourcemanager.projectIamAdmin, serviceusage.serviceUsageAdmin, artifactregistry.admin, networkconnectivity.admin, iap.tunnelResourceAccessor, viewer/owner
+Serivce accounts need the proper IAM permissions in order to be able to build the infrastructure. The primary user account that is running terraform needs permission granted from the source project that is to be added to the infrastructure. To ensure the proper roles have been provided utilize the following commands. Once bootstrap has been completed then these permissions can be removed.
 
-### Quick checks
-- List your roles on a project:
+
+### Service Account Permissions
+
+Before you begin, any Project using this method will require the proper API's and a Terraform Service Account configured with the proper Roles. The following API's and permissions need to be granted to the Project and service account:
+
+##### Project API's
+The project will need the following APIS enabled:
+- Network Connectivity API
+- Google Cloud API
+- Identity and Access Management (IAM) API
+- Security Token Service API
+
+##### terraform Service Account Roles - Permissions needed for the operator
+
+***Owner - DO NOT USE*** - to follow the concept of Least Privilege it is strongly recommended not to grant Owner permission. Instead grant the following Roles:
+- Artifact Registry Admin
+- Storage Admin
+- Project IAM Admin
+- roleAdmin / iam.roleAdmin - for Role Administrator
+- iam.serviceAccountUser
+- resourcemanager.projectIamAdmin
+- serviceusage.serviceUsageAdmin
+- artifactregistry.admin
+- networkconnectivity.admin
+- iap.tunnelResourceAccessor
+- Service Account Token Creator
+- compute.admin
+- compute.instanceAdmin.v1
+- compute.networkAdmin
+- compute.osLogin
+- compute.viewer
+- viewer
+
+### Service Account Verification
+To verify the Service Account has the proper permissions granted by a project that is to be added run the following checks.
+
+#### Login with Default credentials
+
+`gcloud auth application-default login`
+
+### Quick permission checks
+- to view a list the service account roles on a project:
   - `gcloud projects get-iam-policy <project> --flatten="bindings[].members" --filter="bindings.members:user:<account>" --format="table(bindings.role, bindings.members)"`
+
 - Ensure SA token creator (example for taaops Terraform SA):
   - `gcloud iam service-accounts get-iam-policy terraform@taaops.iam.gserviceaccount.com --project=taaops --format='table(bindings.role, bindings.members)'`
 
 
+### Verify project permissions:
+
+`gcloud projects get-iam-policy <project> \
+  --flatten="bindings[]" \
+  --format="table(bindings.role, bindings.members)" \
+  --filter="bindings.members:user:you@example.com"`
 
 
-#### 1. Install Requirements
+#### Complete listing:
 
-    * Terraform: ≥ 1.3
-    * gcloud CLI: gcloud auth application-default login
-    * Project APIs and Application Default Credentials: see below
-       
+ `gcloud projects get-iam-policy <project name> \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:user:<account@example.com>" \
+  --format="table(bindings.role, bindings.members)"`
+
+
+#### Check projects for roles:
+
+`gcloud iam service-accounts get-iam-policy terraform@<project1>.iam.gserviceaccount.com \
+  --project=<project1> --format='table(bindings.role, bindings.members)'`
+  
+`gcloud iam service-accounts get-iam-policy terraform@<project2>.iam.gserviceaccount.com \
+  --project=<project2> --format='table(bindings.role, bindings.members)'`
+
+`gcloud iam service-accounts get-iam-policy jasops-terraform@<project3>.iam.gserviceaccount.com \
+  --project=<project3> --format='table(bindings.role, bindings.members)'`
+
+`gcloud iam service-accounts get-iam-policy terraform-service@<project4>.iam.gserviceaccount.com \
+  --project=<project4> --format='table(bindings.role, bindings.members)'`
+
+`gcloud iam service-accounts get-iam-policy terraform-service-delta@<project5>.iam.gserviceaccount.com \
+  --project=<project5> --format='table(bindings.role, bindings.members)'`
+
+
 #
 
-#### Before you begin - Project and Service Account configuration
-
-Any Project using this method will require the proper API's and a Terraform Service Account configured with the proper Roles:
-
-##### Project API's
-
-* Network Connectivity API
-* Google Cloud API
-* Identity and Access Management (IAM) API
-* Security Token Service API
-
-##### terraform Service Account Roles
-* Owner
-* Artifact Registry Admin
-* Storage Admin
-* Project IAM Admin
-* roleAdmin - Role Administrator
-* Service Account Token Creator
+# Deployment
 
 
-#### Service Account Instructions
+### Scripts
 
-##### Creating a Service Account
+In order ease the use of steps required to properly deploy this environment using scaffolding a Bootstrap script  `./scripts/bootstrap.sh` and Infra (Infrastucture) `./scripts/infra.sh` can be used instead of manually going through the bootstrapping.
+
+- boostrap.sh - Seeds IAM bindings. Runs the initial bootstrap granting permission for Account Impersonation
+- infra.sh - creating and tearing down of the network infrastructure
+
+***NOTE: These commands are intended to be run from the root directory:***
+
+
+#### bootstrap.sh
+
+- Seeds IAM bindings/custom roles across projects.
+- Apply: `./scripts/bootstrap.sh apply`
+- Destroy (optional; wipes bootstrap IAM/service accounts): `./scripts/bootstrap.sh destroy`. Only use this when completely destroying everything and accounts are no longer needed.
+- Run `bootstrap.sh` first when creating the infrastructure or when adding new resources from outside accounts.
+
+#### infra.sh
+
+- Builds compute + networking
+- Apply with tfvars and bootstrap_mode=false: `./scripts/infra.sh apply`
+- Destroy compute/network only (keeps bootstrap IAM intact): `./scripts/infra.sh destroy`
+
+
+
+#### Option - Run from Bootstrap or Infra directory
+
+Alternatively these scripts can also be run from within each directory. In order to deploy it properly using the configuration settings from `tfvars` and `.env` you need instruct terraform to reference `.tfvars` when running both the scripts (bootstrap or infra): `-var-file=../terraform.tfvars`
+
+example: `terraform plan -var-file=../terraform.tfvars -out=tfplan_bootstrap`
+
+- The scripts can be run from the root directory or you can also change to the appropriate directory .
+- Once inside bootstrap or infra directory run valiadate, plan, apply while calling tfvars:
+`terraform plan -var-file=../terraform.tfvars -out=tfplan_bootstrap`
+- With this method you can also point to an alternative .tfvars file
+
+## MAKEFILE
+
+There is also a Makefile which can be used to deploy the infrastructure. In order to use the Makefile be sure:
+
+- terraform CLI is installed
+- repo root contains terraform.tfvars so the Makefile/scripts is able to use it or set TFVARS=/path/to/tfvars.
+
+#### How to run Makefile
+
+***Bootstrap (IAM/custom roles, one-time setup):***
+
+- `make bootstrap-plan` - to preview
+- `make bootstrap` - to apply terraform and build bootstrap
+- `make bootstrap-destroy` - to tear down bootstrap only
+***Infra (compute/network):***
+- `make infra-plan` - preview
+- `make infra` - to apply terraform and build the networking and compute infrastructure
+- `make infra-destroy` - destroy infra only; (bootstrap IAM stays)
+***Full teardown:***
+- `make destroy-all` - runs infra-destroy then bootstrap-destroy
+***Cleanse:***
+- `make fmt` - to format
+- `make validate` - to validate both stacks
+- `make clean-plans` - to delete saved plan files.
+
+# Setup Instructions
+
+#
+
+
+#### Service Account Instructions - Creating a Service Account
 
 1. Create a service account
     1. In the search bar, type in “Service Account” and click on “Service Accounts”
     2. Select your desired project for the service account
-        * You’ll have to create a service account for every project you want to have
+        - You’ll have to create a service account for every project you want to have
     3. Click on “create service account”
-        * Service account details
-            * Service account name = terraform-service
-            * Service account ID will automatically generate (don't edit this)
-            * Service account description = terraform service account for (insert project name here)
-            * Click “create and continue”
-        * Grant this service account access to project
-            * Click on the “select a role” box, search for 'Owner'
-            * Select “add another role” to add each additional role:
-                * Storage Admin
-                * Artifact Registry Administrator
-                * Project IAM Admin
-                * roleAdmin
-                * Service Account Token Creator
-            * Click “continue”
-        * Grant users access to this service account
-            * Click “done”
+        - Service account details
+            - Service account name = terraform-service
+            - Service account ID will automatically generate (don't edit this)
+            - Service account description = terraform service account for (insert project name here)
+            - Click “create and continue”
+        - Grant this service account access to project
+            - Click on the “select a role” box, search for 'Owner'
+            - Select “add another role” to add each additional role:
+                - Storage Admin
+                - Artifact Registry Administrator
+                - Project IAM Admin
+                - roleAdmin
+                - Service Account Token Creator
+            - Click “continue”
+        - Grant users access to this service account
+            - Click “done”
 2. Create keys for service account - NOTE: this is for local usage only, DO NOT to be place in terraform:
 
-* Underneath the “Actions” column on the far right, click on the 3 vertical dots and select “Manage Keys”
+- Underneath the “Actions” column on the far right, click on the 3 vertical dots and select “Manage Keys”
 
 [](https://lh7-rt.googleusercontent.com/docsz/AD_4nXd-tdTpnxYLqlw1bQsxUH_6Y0bY_64aBwuFhLlcQCta3jgnwnXCd4O2ltsbyawENeRtH7vGuvDVWck-sxvEpWGfLW7bGDhf7xkyVVj3kwmyogF3S-ZTZzMP3-bwDHcxBH3WyBXP5w?key=vxFwUQ116uEGLp5-ipWOb5S_)
 
-* Click on “Add key” > “Create New Key”
-* Make sure “json” is selected and click create
-* The key is now saved to your computer; move the key to your Terraform folder
-* Create an Cloud Storage Bucket copy the key to your Project Bucket:
+- Click on “Add key” > “Create New Key”
+- Make sure “json” is selected and click create
+- The key is now saved to your computer; move the key to your Terraform folder
+- Create an Cloud Storage Bucket copy the key to your Project Bucket:
 
   NOTE: To create a Cloud Storage bucket, go to the Cloud Storage Buckets page in the Google Cloud console, click "Create", and follow the steps on the "Create a bucket" page.
 
@@ -258,19 +354,15 @@ gcloud projects add-iam-policy-binding taaops \
   --role="roles/iam.roleAdmin"
 ```
 
-# 
-
-# Runing the Project
-in order to ease the steps 
-
+#
 
 # Project Naming Notes
 
-Nameing convention for .tfvars
+Naming convention for .tfvars
 
 The original project name will be used to define `***projectname***-ops` as the key in the impersonation/region/subnet/tunnel maps: e.g gcp-project-name -> projectname-ops.
-* Keep `"***projectname***"` in the startup script map, and the actual project id lives in the 'projectname_*' variables.
-* **Actual project vars** (***projectname***_project = "original-project-name", etc.) stay in the “Projects + Service Accounts” block. Everything that talks to GCP (providers, modules) ultimately uses these real IDs.
+- Keep `"***projectname***"` in the startup script map, and the actual project id lives in the 'projectname_*' variables.
+- **Actual project vars** (***projectname***_project = "original-project-name", etc.) stay in the “Projects + Service Accounts” block. Everything that talks to GCP (providers, modules) ultimately uses these real IDs.
 
 ```
 # Under Project and Service Accounts:
@@ -280,23 +372,24 @@ wakanda_zone    = "us-west2-a"
 wakanda_sa      = "project-terraform@project.iam.gserviceaccount.com"
 ```
 
-* **Logical keys** (e.g. projectname-ops) are the friendly handles the locals use to glue things together. The key must appear everywhere the locals expect it:
-  * local.project_ids
-  * var.spokes and var.spoke_regions
-  * var.subnet_cidrs
-  * in every tunnel src/dst.
+- **Logical keys** (e.g. projectname-ops) are the friendly handles the locals use to glue things together. The key must appear everywhere the locals expect it:
+  - local.project_ids
+  - var.spokes and var.spoke_regions
+  - var.subnet_cidrs
+  - in every tunnel src/dst.
 
 #
+
 That way local.project_ids["project-ops"] resolves to the real project id and all downstream lookups work.
 
-* **Provider alias** (google.project_ops) is just Terraform syntax so each module can pick the right credentials. It points at var.tiqs_project, so it follows whatever actual project id you set.
+- **Provider alias** (google.project_ops) is just Terraform syntax so each module can pick the right credentials. It points at var.tiqs_project, so it follows whatever actual project id you set.
 
-* **Startup scripts map** is the special case: in modules/compute/main.tf we index the map with the real project id (var.project), so leave the key as "class-6-5-tiqs" there.
-
+- **Startup scripts map** is the special case: in modules/compute/main.tf we index the map with the real project id (var.project), so leave the key as "class-6-5-tiqs" there.
 
 Example:
 
 Under Project and Service Accounts:
+
 ```
 wakanda_project = "***GCP project name***" # us-west2 Los Angeles
 wakanda_region  = "us-west2"
@@ -307,7 +400,6 @@ wakanda_sa      = "project-terraform@project.iam.gserviceaccount.com"
 ```
 "wakanda-ops" = "<project-terraform@project>.iam.gserviceaccount.com"
 ```
-
 
 # NETWORK CONFIGURATION
 
@@ -338,11 +430,12 @@ wakanda_sa      = "project-terraform@project.iam.gserviceaccount.com"
 ### HA VPN - BGP Tunnels and ASN configuration
 
 This configuration uses an HA VPN Mesh for the tunnels that will connect to a Hub and Spoke.
+
 ##### Role of the HA VPN Gateway
 
-* `google_compute_ha_vpn_gateway` represents the physical HA VPN endpoint in each project/region.
-* The tunnels (`google_compute_vpn_tunnel`) are always anchored to a gateway.
-* Without the gateway, Terraform has nowhere to attach the tunnels.
+- `google_compute_ha_vpn_gateway` represents the physical HA VPN endpoint in each project/region.
+- The tunnels (`google_compute_vpn_tunnel`) are always anchored to a gateway.
+- Without the gateway, Terraform has nowhere to attach the tunnels.
 
 #
 
@@ -422,9 +515,9 @@ CIDR ......... usable hosts (local | peer) ..... network/broadcast (don’t use)
 
 So when allocating a tunnel pair:
 
-* Pick an unused /30 from a coordination sheet (e.g. start at 169.254.10.16/30, 169.254.10.20/30, 169.254.10.24/30 … increment by 4 each time).
-* t0 gets the first /30, t1 the next /30. If you pre-stage t2/t3, keep stepping by 4 so they remain unique.
-* For each /30, assign ip_src to the lower usable (network+1) on the source router, and ip_dst to the higher usable (network+2) on the peer. In the reverse-direction block you simply mirror them.
+- Pick an unused /30 from a coordination sheet (e.g. start at 169.254.10.16/30, 169.254.10.20/30, 169.254.10.24/30 … increment by 4 each time).
+- t0 gets the first /30, t1 the next /30. If you pre-stage t2/t3, keep stepping by 4 so they remain unique.
+- For each /30, assign ip_src to the lower usable (network+1) on the source router, and ip_dst to the higher usable (network+2) on the peer. In the reverse-direction block you simply mirror them.
 
 Example layout for a new project pair:
 
@@ -441,30 +534,30 @@ Keep a master list of the Router IP assignements so every project pair gets non-
 
 **ASN:** For Cloud Router over HA VPN (or NCC spokes) you can use any ***private BGP ASN*** that isn’t already in use on the opposite side of the session:
 
-* **16‑bit private ASN range:** 64512–65534
-* **32‑bit private ASN range:** 4200000000–4294967294
+- **16‑bit private ASN range:** 64512–65534
+- **32‑bit private ASN range:** 4200000000–4294967294
 
 **Best practices:**
 
-* Stay inside those ranges as these are only values Google lets you configure on Cloud Router unless you’re terminating a public peering.
-* Make sure the two routers that will peer don’t reuse the same ASN.
-* Avoid the documentation/reserved block 64496–64511 so you don’t collide with examples.
+- Stay inside those ranges as these are only values Google lets you configure on Cloud Router unless you’re terminating a public peering.
+- Make sure the two routers that will peer don’t reuse the same ASN.
+- Avoid the documentation/reserved block 64496–64511 so you don’t collide with examples.
 
 **Example:**
 Wakanda↔Balerica HA tunnels that means:
 
-* balerica-wakanda t0 (169.254.10.16/30):
-  * Taaops side: ip_src = "169.254.10.17/30"
-  * Wakanda side: ip_dst = "169.254.10.18/30"
-* wakanda-balerica t0:
-  * Wakanda side: ip_src = "169.254.10.18/30"
-  * Taaops side: ip_dst = "169.254.10.17/30"
-* balerica-wakanda t1 (169.254.10.20/30):
-  * Taaops side: ip_src = "169.254.10.21/30"
-  * Wakanda side: ip_dst = "169.254.10.22/30"
-* wakanda-balerica t1:
-  * Wakanda side: ip_src = "169.254.10.22/30"
-  * Taaops side: ip_dst = "169.254.10.21/30"
+- balerica-wakanda t0 (169.254.10.16/30):
+  - Taaops side: ip_src = "169.254.10.17/30"
+  - Wakanda side: ip_dst = "169.254.10.18/30"
+- wakanda-balerica t0:
+  - Wakanda side: ip_src = "169.254.10.18/30"
+  - Taaops side: ip_dst = "169.254.10.17/30"
+- balerica-wakanda t1 (169.254.10.20/30):
+  - Taaops side: ip_src = "169.254.10.21/30"
+  - Wakanda side: ip_dst = "169.254.10.22/30"
+- wakanda-balerica t1:
+  - Wakanda side: ip_src = "169.254.10.22/30"
+  - Taaops side: ip_dst = "169.254.10.21/30"
 
 When adding additional tunnels e.g. t2/t3, follow the same pattern—use 169.254.10.25/30 for the first host, 169.254.10.26/30 for the second, etc.
 
@@ -475,9 +568,9 @@ When adding additional tunnels e.g. t2/t3, follow the same pattern—use 169.25
 | t2 | 169.254.10.24/30 | 169.254.10.24 | 169.254.10.25 | 169.254.10.26 | 169.254.10.27 |
 | t3 | 169.254.10.28/30 | 169.254.10.28 | 169.254.10.29 | 169.254.10.30 | 169.254.10.31 |
 
-* balerica-wakanda uses the lower host in each /30 (.17, .21, .25, .29) as the local interface and the higher host (.18, .22, .26, .30) as the peer.
-* wakanda-balerica mirrors the same pairs back, so both ends agree on the host/peer mapping.
-* ASN assignments stay at 65520 (taaops) and 65515 (wakanda), which are valid private ASNs.
+- balerica-wakanda uses the lower host in each /30 (.17, .21, .25, .29) as the local interface and the higher host (.18, .22, .26, .30) as the peer.
+- wakanda-balerica mirrors the same pairs back, so both ends agree on the host/peer mapping.
+- ASN assignments stay at 65520 (taaops) and 65515 (wakanda), which are valid private ASNs.
 
 Adding another spoke means wiring in the new project everywhere Terraform expects per-spoke inputs. Use the tables below as your checklist (example values assume a new project called atlantis-ops).
 
@@ -510,11 +603,11 @@ Adding another spoke means wiring in the new project everywhere Terraform expect
 
 Reminders:
 
-* Reuse the same logical key (e.g. atlantis-ops) across local.project_ids, spokes, spoke_regions, and the tunnel definitions so the maps join correctly - 03a-locals.tf:15
+- Reuse the same logical key (e.g. atlantis-ops) across local.project_ids, spokes, spoke_regions, and the tunnel definitions so the maps join correctly - 03a-locals.tf:15
 
-* Keep tunnel naming symmetrical (src-dst-t0/src-dst-t1 and the reverse) so the spoke module can reference predictable keys ().    07-spokes.tf:18
+- Keep tunnel naming symmetrical (src-dst-t0/src-dst-t1 and the reverse) so the spoke module can reference predictable keys ().    07-spokes.tf:18
 
-* If the new spoke uses more than t0/t1, add interface indexes for t2, t3, etc. in local.interface_index (). 03a-locals.tf:146
+- If the new spoke uses more than t0/t1, add interface indexes for t2, t3, etc. in local.interface_index (). 03a-locals.tf:146
 
 #
 
@@ -529,37 +622,37 @@ Reminders:
 1. **Locals - `03a-locals.tf`**
 This terraform file handles flattening - [terraform flatten Function](https://developer.hashicorp.com/terraform/language/functions/flatten)
     It takes a nested collection such as list of lists or lists of maps in a for loop and collapses them in a single list so terraforms logic can handle each element. It reduces a nested data structure into a flat one. This file handles the per-spoke/per-tunnel matrix then requires individual records to feed ***`for`*** maps.
-    * ***baseline_bindings:*** handles the key, project ID, service account, and role binding. It perform a nested for loop ***`(key, role)`*** that loops over each spoke and each baseline role, producing a list of lists; `flatten()` turns that into one list of binding objects, which then becomes the `baseline_bindings_map` used by `google_project_iam_member.baseline_roles`.
+    - ***baseline_bindings:*** handles the key, project ID, service account, and role binding. It perform a nested for loop ***`(key, role)`*** that loops over each spoke and each baseline role, producing a list of lists; `flatten()` turns that into one list of binding objects, which then becomes the `baseline_bindings_map` used by `google_project_iam_member.baseline_roles`.
 
-    * ***cross_bindings:*** performs a nested for loop ***`(src_key, dst_key)`*** of every spoke against every other spoke to define impersonation grants; flatten collapses the nested array so each cross-project grant is a single element keyed in cross_bindings_map.
-    * ***vpn_tunnels_flattened:*** flattens the user-supplied tunnel map ***`(var.tunnels)`***, which is structured as per-pair objects containing their own tunnels map. Flattening that nested output yields one entry per tunnel `(t0, t1, …)` so the later vpn_tunnels_map can be indexed as ***`<pair>-<t#>`*** when resources like `google_compute_vpn_tunnel` look them up.
+    - ***cross_bindings:*** performs a nested for loop ***`(src_key, dst_key)`*** of every spoke against every other spoke to define impersonation grants; flatten collapses the nested array so each cross-project grant is a single element keyed in cross_bindings_map.
+    - ***vpn_tunnels_flattened:*** flattens the user-supplied tunnel map ***`(var.tunnels)`***, which is structured as per-pair objects containing their own tunnels map. Flattening that nested output yields one entry per tunnel `(t0, t1, …)` so the later vpn_tunnels_map can be indexed as ***`<pair>-<t#>`*** when resources like `google_compute_vpn_tunnel` look them up.
 
-    * **tunnel_projects:** collects each ***src/dst*** into a temporary list of pairs and flattens it, leaving a deduplicated set of project IDs that have routers, gateways, etc.
-    * ***router_flattened:*** mirrors the tunnel flattening while adding each entry with router-facing metadata (project IDs, interface IPs, ASNs). The flattened shape feeds ***router_map***, which drives the google_compute_router_interface and google_compute_router_peer resources
+    - **tunnel_projects:** collects each ***src/dst*** into a temporary list of pairs and flattens it, leaving a deduplicated set of project IDs that have routers, gateways, etc.
+    - ***router_flattened:*** mirrors the tunnel flattening while adding each entry with router-facing metadata (project IDs, interface IPs, ASNs). The flattened shape feeds ***router_map***, which drives the google_compute_router_interface and google_compute_router_peer resources
 2. **Hubs - `06-gcp-hub.tf`**:
-    * One per project from `local.spoke_sas`.
-    * Keeps naming consistent (`taaops-hub`, `genosha-ops-hub`, `atlantis-ops-hub`, etc.).
+    - One per project from `local.spoke_sas`.
+    - Keeps naming consistent (`taaops-hub`, `genosha-ops-hub`, `atlantis-ops-hub`, etc.).
 3. **Spokes - `07-spokes.tf`**:
-    * One per project: (`vpn-spoke-taaops`, etc.).
-    * The `linked_vpn_tunnels.uris` block **auto-collects all tunnels where that project is the source** (`t.src == each.key`).
-    * Example: For `taaops`, URIs = `[vpn_tunnel. "taaops->genosha-ops-0", "taaops->genosha-ops-1"]`.
+    - One per project: (`vpn-spoke-taaops`, etc.).
+    - The `linked_vpn_tunnels.uris` block **auto-collects all tunnels where that project is the source** (`t.src == each.key`).
+    - Example: For `taaops`, URIs = `[vpn_tunnel. "taaops->genosha-ops-0", "taaops->genosha-ops-1"]`.
 4. **Project Scaling**:
-    * Add another project to `spokes` and corresponding tunnels to `tunnels = {}` → Terraform automatically generates its hub + spoke, and links the right tunnels.
+    - Add another project to `spokes` and corresponding tunnels to `tunnels = {}` → Terraform automatically generates its hub + spoke, and links the right tunnels.
 
 5. **Gateways - `resource "google_compute_ha_vpn_gateway" "gateways"`**
-    * Created for every `src` and `dst` project in the ***tunnels map*** and is handled in **`05-vpn-tunnels.tf`**.
-    * Ensures each side has its own HA VPN gateway.
+    - Created for every `src` and `dst` project in the ***tunnels map*** and is handled in **`05-vpn-tunnels.tf`**.
+    - Ensures each side has its own HA VPN gateway.
 6. **Tunnels - `05-vpn-tunnels.tf`**
-    * Built dynamically from `var.tunnels`.
-    * Names use `${src}->${dst}-tunnel`.
-    * Pull PSKs, ASN, router IPs, and interfaces directly from the tunnel object.
+    - Built dynamically from `var.tunnels`.
+    - Names use `${src}->${dst}-tunnel`.
+    - Pull PSKs, ASN, router IPs, and interfaces directly from the tunnel object.
 7. **Routers, Interfaces, Peers - 14-routers.tf**
-    * One router per project (from tunnels).
-    * Interfaces and peers iterate over each tunnel.
-    * Router peer config pulls `router_ip_dst` and `asn_dst` dynamically.
+    - One router per project (from tunnels).
+    - Interfaces and peers iterate over each tunnel.
+    - Router peer config pulls `router_ip_dst` and `asn_dst` dynamically.
 8. **No hardcoded mappings**
-    * PSK, ASN, region, and IPs are all in `var.tunnels`.
-    * Adding a new tunnel = add to the tunnel map **`tunnels = {}`** inside `tfvars`.
+    - PSK, ASN, region, and IPs are all in `var.tunnels`.
+    - Adding a new tunnel = add to the tunnel map **`tunnels = {}`** inside `tfvars`.
 
 #
 
@@ -567,13 +660,12 @@ This terraform file handles flattening - [terraform flatten Function](https://de
 
 The flow for creating resources in terraform is ***.tfvars, variables, providers, authentication:***
 
-* **`.tfvars`+`02-variables.tf`** → all inputs (`bootstrap_mode`, `spokes`, `balerica_project`, etc.).
-* **`03a-locals.tf`** → merges variables into derived maps (`local.spoke_sas`, `local.cross_bindings_map`).
-* **`01-providers.tf`** → uses `local.spoke_sas` to dynamically declare providers per project.
-* **`00-authentication.tf`** → uses providers to sanity-check who you are actually authenticated as.
+- **`.tfvars`+`02-variables.tf`** → all inputs (`bootstrap_mode`, `spokes`, `balerica_project`, etc.).
+- **`03a-locals.tf`** → merges variables into derived maps (`local.spoke_sas`, `local.cross_bindings_map`).
+- **`01-providers.tf`** → uses `local.spoke_sas` to dynamically declare providers per project.
+- **`00-authentication.tf`** → uses providers to sanity-check who you are actually authenticated as.
 
 #
-
 
 ## tfvars
 
@@ -583,22 +675,22 @@ the tfvars is where the primary values are set that will be input to be sent to 
 
 **Projects + Service accounts**: provide the details for each project including:
 
-* the project name
-* region
-* zone
-* terrform service account
+- the project name
+- region
+- zone
+- terrform service account
 
 **Spokes Regions**
 
-* Project ID region
+- Project ID region
 
 **Subnet CIDR**
 
-* subnet CIDR assignments for each project
+- subnet CIDR assignments for each project
 
 **Startup scripts**
 
-* name of the startup scripts for each projects vpc
+- name of the startup scripts for each projects vpc
 
 **tunnels**
 The tunnel configuration. Refer to the prior above notes.
@@ -638,15 +730,15 @@ Adding another spoke means wiring in the new project everywhere Terraform expect
 
 Reminders:
 
-* Reuse the same logical key (e.g. atlantis-ops) across local.project_ids, spokes, spoke_regions, and the tunnel definitions so the maps join correctly ().
+- Reuse the same logical key (e.g. atlantis-ops) across local.project_ids, spokes, spoke_regions, and the tunnel definitions so the maps join correctly ().
 
     03a-locals.tf:15
 
-* Keep tunnel naming symmetrical (src-dst-t0/src-dst-t1 and the reverse) so the spoke module can reference predictable keys ().
+- Keep tunnel naming symmetrical (src-dst-t0/src-dst-t1 and the reverse) so the spoke module can reference predictable keys ().
 
     07-spokes.tf:18
 
-* If the new spoke uses more than t0/t1, add interface indexes for t2, t3, etc. in local.interface_index ().
+- If the new spoke uses more than t0/t1, add interface indexes for t2, t3, etc. in local.interface_index ().
 
     03a-locals.tf:146
 
@@ -656,15 +748,15 @@ Reminders:
 
 This setup uses cross-project HA VPN in order to avoid the default Compute Engine SAs which is the ideal "good" security practice. It relies only on the explicit service accounts (<https://cloud.google.com/iam/docs/service-account-overview>) that Terraform itself creates and manages along with Impersonation of the project account (service account impersonation: <https://cloud.google.com/docs/authentication/use-service-account-impersonation>)
 
-* Each project (Balerica + Genosha) has its own Terraform service account.
-  * Custom IAM roles (e.g. customVpnAccess) are created in each project with only the minimum permissions.
-  * Cross-project IAM bindings then allow each SA to use VPN resources in the other project.
-  * depends_on ensures that Terraform doesn’t try to bind roles to SAs or apply permissions before the underlying roles/SAs exist.
+- Each project (Balerica + Genosha) has its own Terraform service account.
+  - Custom IAM roles (e.g. customVpnAccess) are created in each project with only the minimum permissions.
+  - Cross-project IAM bindings then allow each SA to use VPN resources in the other project.
+  - depends_on ensures that Terraform doesn’t try to bind roles to SAs or apply permissions before the underlying roles/SAs exist.
 
 For Impersonation to work each Project needs a terraform service account with the following Roles assigned:
 
-* Enable Service Account Credentials API in your project.
-* Service Account Token Creator (roles/iam.serviceAccountTokenCreator) IAM role on the service account. More details below
+- Enable Service Account Credentials API in your project.
+- Service Account Token Creator (roles/iam.serviceAccountTokenCreator) IAM role on the service account. More details below
 
 #
 
@@ -677,22 +769,22 @@ For Impersonation to work each Project needs a terraform service account with th
 ![alt text](image.png)
 
 **Spokes:**
-* not available in South America, South Africa:
-  * site-to-site data transfer is not supported in South America: "southamerica-east1"
+- not available in South America, South Africa:
+  - site-to-site data transfer is not supported in South America: "southamerica-east1"
 
-* 1 router per region, per unique ASN relationship.
+- 1 router per region, per unique ASN relationship.
 
-* Hub-and-spoke - run one router at the hub and let it peer with multiple spokes’ routers.
+- Hub-and-spoke - run one router at the hub and let it peer with multiple spokes’ routers.
 
-* Only add multiple routers in the hub project if you need administrative isolation or different ASN policies per spoke.
+- Only add multiple routers in the hub project if you need administrative isolation or different ASN policies per spoke.
 
 #
 
 **Tunnel**
 Each tunnel has:
-* Router interface `(ip_range = var.*_router_ip_tunnel*)`
-* Router peer `(peer_ip_address = split["/", var.*_router_ip_tunnel*](0))`
-* Peers use `split["/", var.*_router_ip_tunnel0](0)` (peer IP only)
+- Router interface `(ip_range = var.*_router_ip_tunnel*)`
+- Router peer `(peer_ip_address = split["/", var.*_router_ip_tunnel*](0))`
+- Peers use `split["/", var.*_router_ip_tunnel0](0)` (peer IP only)
 
 NOTE: ***Split Explanation*** - (see appendix for more detailed explanation):  
 Split breaks a single string into a list of substrings based on a specified delimiter. In this case it strips off the subnet mask and provides the peer IP address. In this method the router interface still uses the full x.x.x.x/30, while the peer uses only the x.x.x.x.
@@ -701,10 +793,10 @@ Split breaks a single string into a list of substrings based on a specified deli
 
 ##### All ASNs come from .tfvars
 
-ASNs are assigned and pulled pulled from ***name_bgp_asn*** 
+ASNs are assigned and pulled pulled from ***name_bgp_asn***
 
-* Router ASN = 65501 (Balerica)
-* Peer ASN = 65515 (Genosha)
+- Router ASN = 65501 (Balerica)
+- Peer ASN = 65515 (Genosha)
 
 #
 
@@ -714,15 +806,14 @@ Terraform follows: IAM ➝ VPN Gateways ➝ Tunnels ➝ Router Interfaces ➝ Ro
 
 This will ensure the following:
 
-* Service accounts are created with short account_id = "terraform".
-* .tfvars overrides (balerica_sa, genosha_sa) can be used if you want pre-existing SAs.
-* Locals unify the references (local.balerica_sa_email, local.genosha_sa_email).
-* Custom roles grant minimal VPN permissions.
-* IAM bindings always reference the correct service account.
-* depends_on enforces role creation before bindings.
+- Service accounts are created with short account_id = "terraform".
+- .tfvars overrides (balerica_sa, genosha_sa) can be used if you want pre-existing SAs.
+- Locals unify the references (local.balerica_sa_email, local.genosha_sa_email).
+- Custom roles grant minimal VPN permissions.
+- IAM bindings always reference the correct service account.
+- depends_on enforces role creation before bindings.
 
 #
-
 
 #
 
@@ -730,13 +821,13 @@ This will ensure the following:
 
   Dependency chain:
 
-* IAM Bindings (google_project_iam_member) → allow cross-project SA usage
-* HA VPN Gateways (google_compute_ha_vpn_gateway) → the actual VPN endpoints
-* Routers (google_compute_router) → BGP-capable routers in each project
-* Tunnels (google_compute_vpn_tunnel) → attach to the gateways and routers
-* Router Interfaces (google_compute_router_interface) → bind tunnels to router IPs
-* Router Peers (google_compute_router_peer) → configure the BGP sessions
-* Terraform doesn’t “import” IAM privileges; it just **relies on your current credentials** to create/update resources.
+- IAM Bindings (google_project_iam_member) → allow cross-project SA usage
+- HA VPN Gateways (google_compute_ha_vpn_gateway) → the actual VPN endpoints
+- Routers (google_compute_router) → BGP-capable routers in each project
+- Tunnels (google_compute_vpn_tunnel) → attach to the gateways and routers
+- Router Interfaces (google_compute_router_interface) → bind tunnels to router IPs
+- Router Peers (google_compute_router_peer) → configure the BGP sessions
+- Terraform doesn’t “import” IAM privileges; it just **relies on your current credentials** to create/update resources.
 
 ---
 
@@ -982,8 +1073,8 @@ terraform apply \
 
 At this point:
 
-* Your CI/CD account (or your Gmail account, if you set `cicd_account = ...`) can mint tokens for the Terraform SAs.
-* Terraform SAs themselves don’t yet have project-level powers, but they can now be impersonated.
+- Your CI/CD account (or your Gmail account, if you set `cicd_account = ...`) can mint tokens for the Terraform SAs.
+- Terraform SAs themselves don’t yet have project-level powers, but they can now be impersonated.
 
 ---
 
@@ -1105,7 +1196,6 @@ Building Ladder:
 
 ## SCRIPTS
 
-
 #
 
 # APENDIX
@@ -1191,7 +1281,6 @@ resource "aws_vpc" "example" {
 
 However, in order to declare all of the subnets with a single resource block, we must first flatten the structure to produce a collection where each top-level element represents a single subnet:
 
-
 ``` py
 locals {
 
@@ -1226,7 +1315,8 @@ resource "aws_subnet" "example" {
 The above results in one subnet instance per subnet object, while retaining the associations between the subnets and their containing networks.
 
 ## Split
-Split breaks a single string into a list of substrings based on a specified delimiter. 
+
+Split breaks a single string into a list of substrings based on a specified delimiter.
 
 Separator: The argument passed to the method, in this case '.'. This is the character where the split will occur.
 
@@ -1234,6 +1324,7 @@ ip_address = "192.168.1.10"
 octets = ip_address.split('.')
 
 Example
+
 ```py
 print(octets)
 # Output: ['192', '168', '1', '10']
@@ -1249,7 +1340,7 @@ print(f"The last octet is: {last_octet}")
 # Output: The last octet is: 10
 ```
 
-# 
+#
 
 Project Example:
   `peer_ip_address = split["/", var.name_router_ip_tunnel0](0)`
