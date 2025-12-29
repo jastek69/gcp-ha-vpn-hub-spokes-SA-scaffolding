@@ -52,8 +52,13 @@ variable "tiqs_project" { type = string }
 variable "tiqs_region" { type = string }
 variable "tiqs_zone" { type = string }
 
+variable "dale_project" { type = string }
+variable "dale_region" { type = string }
+variable "dale_zone" { type = string }
 
-
+variable "cas_project" { type = string }
+variable "cas_region" { type = string }
+variable "cas_zone" { type = string }
 
 
 # ------------------------------
@@ -80,17 +85,17 @@ variable "tiqs_sa" {
   description = "Terraform SA for TIQS project"
 }
 
-/* to be removed later - not used in bootstrap layer
-
-# ------------------------------
-# Subnets
-# ------------------------------
-variable "subnet_cidrs" {
-  type        = map(string)
-  description = "Map of project → subnet CIDR"
+variable "dale_sa" {
+  type        = string
+  description = "Terraform SA for Dale project"
 }
 
-*/
+variable "cas_sa" {
+  type        = string
+  description = "Terraform SA for CAS project"
+}
+
+
 
 
 # ------------------------------

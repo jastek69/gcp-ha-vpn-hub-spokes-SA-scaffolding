@@ -1,10 +1,124 @@
+### This Global Enterprise-Level Infratructure contains the following:
+
+Multi-region VMs across the globe ✅
+Cross-project VPN tunnels with HA ✅
+BGP peering between all spokes ✅
+Custom IAM roles and cross-project permissions (no need for json files) ✅
+Network Connectivity Hub integration ✅
+
+
+Summary:
+6-project global infrastructure spanning 4 continents (Asia, North America, South America, Europe)
+Complete hub-spoke VPN mesh with BGP routing for full connectivity
+Terraform scaffolding to handle proper bootstrap/infrastructure separation
+Service account impersonation for secure multi-project deployment
+Automated scripts that handle the complexity seamlessly
+Modular architecture that's easily extensible
+
+
+# Scaffolding
+
+This project is divided into two primary area decoupling the authentication process from the building of the network framework:
+  
+  Boostrap: handles the provisioning and authentication. This will only need to be run at the start of a project or when
+  
+  Infra (infrastucture): handles the building of the network infrastrucutre. Once bootstrapping has been completed and the proper roles have been provided the infrsatructure can be built or destroyed without the need to remove the permsissions that have been established. 
+
+When adding new accounts to expand the network it is necessary to run Bootstrap first and then add the new network resources through Infra.
+
+
 # Hub-and-Spoke VPN Terraform Setup
 
-This repository provisions a hub-and-spoke HA VPN environment in Google Cloud using Terraform.
-It includes projects, Modules, IAM roles, HA VPN gateways, tunnels, Cloud Routers, and startup scripts. This is a secure deployment with a bootstrap mode which can be anabled, variables are set inside .tfvars, and there is no need for a JSON file. It is also configured to be scalable as well as being deployable within CI/CD pipelines. Set the account within .tfvars to either the CI/CD account the user account.
+This repository provisions a hub-and-spoke HA VPN environment in Google Cloud using Scaffold Terraform modules with env and variables. It includes projects, Modules, IAM roles, HA VPN gateways, tunnels, Cloud Routers tf files, and startup scripts. This is a secure configuration with separate deployments for bootstrap mode and an infrastructure mode. Variables are set inside .tfvars and .env so there is no need for a JSON file. It is also configured to be scalable as well as being deployable within CI/CD pipelines. This can be easily done by setting the account within .tfvars to either the CI/CD account the user account.
 
 #
 
+### Authors
+John Sweeney
+T.I.Q.S.
+Michael Dale
+Cassiem Davids
+Vincenet Woods - Uriah
+Benji
+Royce Billot
+
+
+#
+
+### Resources
+Authentication Methods at Google
+[text](https://cloud.google.com/docs/authentication)
+
+Service Account Impersonation
+[text](https://cloud.google.com/iam/docs/service-account-impersonation)
+
+google_service_account
+[text](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam)
+
+#### **IAM policy for Service Account**
+
+When managing IAM roles, you can treat a service account either as a resource or as an identity. This resource is to add iam policy bindings to a service account resource, such as allowing the members to run operations as or modify the service account. To configure permissions for a service account on other GCP resources, use the [google_project_iam](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam) set of resources.
+
+Three different resources help you manage your IAM policy for a service account. Each of these resources serves a different use case:
+
+- [**`google_service_account_iam_policy`**](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_policy-1): Authoritative. Sets the IAM policy for the service account and replaces any existing policy already attached.
+- [**`google_service_account_iam_binding`**](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_binding-1): Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the service account are preserved.
+- [**`google_service_account_iam_member`**](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_member-1): Non-authoritative. Updates the IAM policy to grant a role to a new member. Other members for the role for the service account are preserved.
+
+**Note:**
+
+**`google_service_account_iam_policy`** **cannot** be used in conjunction with **`google_service_account_iam_binding`** and **`google_service_account_iam_member`** or they will fight over what your policy should be.
+
+**Note:**
+
+**`google_service_account_iam_binding`** resources **can be** used in conjunction with **`google_service_account_iam_member`** resources **only if** they do not grant privilege to the same role.
+
+
+Scaffolding
+[text](https://jiminbyun.medium.com/platform-engineering-starter-kit-series-repository-scaffolding-minimal-infra-bootstrap-2-5a9034444219)
+
+
+CODEX and Github CoPilot
+
+
+# Repos and build version:
+
+
+## Task 3 Submission:
+### Michael Dale Armageddon Task 3 Repo
+
+- https://github.com/MichaelDale1/GCP-Armageddon-2025-Dale/tree/Armageddon_Task_3
+
+### Cassiem Armageddon Task 3 Repo
+
+- https://github.com/kazapes/GCPArmageddon2025-cass.git
+- Cass currently can’t edit. Posted on his behalf by Michael Dale.
+
+### Uriah Victorious Armageddon Task 3 Repo
+
+- https://github.com/UriahVictorious/gcp-be-a-man-level-5
+
+### Benji Armageddon Task 3 Repo
+
+- https://github.com/Newest-IT-Bro/Benji-Armageddon-Task-3-Repo.git
+
+### Royce Billiot Armageddon Task 3 Repo
+
+https://github.com/Rbilli51614/GCP-Armageddon-Task-3.git
+
+
+
+## Armageddon 6.5
+The start:
+https://github.com/jastek69/gcp-ha-vpn-hub-spokes
+
+
+Final scaffolding:
+[scaffolding](https://github.com/jastek69/gcp-ha-vpn-hub-spokes-SA-scaffolding.git)
+
+
+
+# Project Details
 ## Service Account Impersonation
 
 How this works:
@@ -14,7 +128,7 @@ How this works:
 * This avoids ever downloading or storing JSON keys - No JSON files are needed locally.
 * In CI/CD, you can do the same with Workload Identity Federation — no keys, just impersonation.
 * You authenticate with gcloud auth login (or gcloud auth application-default login).
-* Terraform uses your active credentials to impersonate the service accounts in each project.
+* Terraform uses your/ active credentials to impersonate the service accounts in each project.
 * If you later rotate or recreate the service account keys, nothing changes in Terraform — it always impersonates.
 
 #
@@ -28,7 +142,6 @@ How this works:
 Utilizing the service account for terraform (as opposed to Compute) through Service Account Impersonation eliminates the need for a JSON (the use of service account keys). [See documentation](https://cloud.google.com/iam/docs/service-account-impersonation)
 
 You can use service account impersonation to set up a local Application Default Credentials (ADC) file. Client libraries that support impersonation can use those credentials automatically. Local ADC files created by using impersonation are supported in the following languages:
-
 * C#
 * Go
 * Java
@@ -38,6 +151,34 @@ You can use service account impersonation to set up a local Application Default 
 #
 
 # Setup Instructions
+
+## Scripts - Quick Start
+In order ease the use of steps required to poperly deploy this environment using scaffolding a Bootstrap script and Infra (Infrastucture) scripts can be used. 
+Each 
+All commands assume you run from the repo root.
+
+### bootstrap.sh
+- Seeds IAM bindings/custom roles across projects.
+- Apply: `./scripts/bootstrap.sh apply`
+- Destroy (optional; wipes bootstrap IAM/service accounts): `./scripts/bootstrap.sh destroy`
+
+### infra.sh
+- Builds compute + networking.
+- Apply with tfvars and bootstrap_mode=false: `./scripts/infra.sh apply`
+- Destroy compute/network only (keeps bootstrap IAM intact): `./scripts/infra.sh destroy`
+
+### Permissions needed for the operator (typical Owner-level set)
+- compute.admin, compute.instanceAdmin.v1, compute.networkAdmin, compute.osLogin, compute.viewer
+- iam.roleAdmin, iam.serviceAccountUser, resourcemanager.projectIamAdmin, serviceusage.serviceUsageAdmin, artifactregistry.admin, networkconnectivity.admin, iap.tunnelResourceAccessor, viewer/owner
+
+### Quick checks
+- List your roles on a project:
+  - `gcloud projects get-iam-policy <project> --flatten="bindings[].members" --filter="bindings.members:user:<account>" --format="table(bindings.role, bindings.members)"`
+- Ensure SA token creator (example for taaops Terraform SA):
+  - `gcloud iam service-accounts get-iam-policy terraform@taaops.iam.gserviceaccount.com --project=taaops --format='table(bindings.role, bindings.members)'`
+
+
+
 
 #### 1. Install Requirements
 
@@ -118,6 +259,9 @@ gcloud projects add-iam-policy-binding taaops \
 ```
 
 # 
+
+# Runing the Project
+in order to ease the steps 
 
 
 # Project Naming Notes
@@ -322,7 +466,7 @@ Wakanda↔Balerica HA tunnels that means:
   * Wakanda side: ip_src = "169.254.10.22/30"
   * Taaops side: ip_dst = "169.254.10.21/30"
 
-(If you plan to turn up t2/t3, follow the same pattern—use 169.254.10.25/30 for the first host, 169.254.10.26/30 for the second, etc.)
+When adding additional tunnels e.g. t2/t3, follow the same pattern—use 169.254.10.25/30 for the first host, 169.254.10.26/30 for the second, etc.
 
 | **Tunnel** | **/30 block** | **Network** | **Local (src)** | **Peer (dst)** | **Broadcast** |
 | --- | --- | --- | --- | --- | --- |
@@ -430,7 +574,6 @@ The flow for creating resources in terraform is ***.tfvars, variables, providers
 
 #
 
-#
 
 ## tfvars
 
@@ -628,7 +771,7 @@ roles/iam.roleAdmin```
 
 ---
 
-⚠️ **Security Note**:
+⚠️ **Security Note**: Follow Least Privelege
 
 `roles/iam.roleAdmin` is powerful — it lets the SA create and update *any* custom role in the project. For production security, restrict this to **Terraform’s dedicated project** only, not globally.
 
@@ -664,7 +807,7 @@ roles/iam.roleAdmin```
 
 #
 
-# 2. Bootstrap vs. Normal Mode - WIP 
+# 2. Bootstrap vs. Infractruture Mode - WIP 
 TODO
 
 Terraform can run in two modes:
@@ -679,7 +822,7 @@ Terraform can run in two modes:
     bootstrap_mode = true
     cicd_account   = "user@example.com" ```
 
-- Normal mode (bootstrap_mode = false)
+- Infrastructure (Infra) mode (bootstrap_mode = false)
   - Terraform impersonates Service Accounts.
   - Steady-state for CI/CD and day-to-day use.
   - Flip back after bootstrap is successful.
@@ -737,14 +880,7 @@ By convention:
 - t2/t3 = pre-allocated for expansion
 - IPs are /30 ranges (RFC5735 reserved, not used inside your VPC).
 
-___
 
-✅ Best Practices
-
-- Always test with terraform plan before apply.
-- Store real secrets/PSKs in a secure secret manager, not in Git.
-- Keep terraform.tfvars.example updated whenever new variables are added.
-- Use bootstrap_mode = true only once during bootstrap, then flip to false.
 
 ___
 
@@ -969,133 +1105,6 @@ Building Ladder:
 
 ## SCRIPTS
 
-#### BASH
-
-##### Manual Bash Boostrap Script
-
-file name: manual_bootstrap.sh
-file location: scripts/manual_bootstrap.sh
-Run: bash scripts/manual_bootstrap.sh
-
-#
-
-#### Doctor script
-
-Does a self-check for bootstrap_mode, ADC email, etc. before continuing so it will fail/warn early.
-
-file name: doctor_common.sh
-file location: scripts/doctor_common.sh:
-
-#
-
-### CICD Scripts
-
-The CI/CD scripts do the following sequences:
-
-* CI/CD scripts self-check first.
-* Get warnings locally if you forget to flip bootstrap mode.
-* Gives a hard fail if bootstrap_mode = true
-
-#
-
-## CI/CD Script (strict mode)
-
-file name: cicd_bootstrap.sh
-file location: scripts/cicd_bootstrap.sh
-Runs impersonation mode only
-Run it in your pipeline:
-```CI=true bash scripts/cicd_bootstrap.sh```
-
-cicd_bash.sh
-
-#
-
-# Makefiles
-
-## Makefile-Driven Workflow version
-
-This is an extended Makefile that bundles the full bootstrap → switch → apply sequence. It is a Makefile-driven script sequence to run all stages with just make bootstrap && make switch && make apply.
-
-file name: dwf.makefile
-file location: scripts/makefile/
-Run:
-```make all```
-Or run each phase individually: make bootstrap, make verify, etc.
-
-#
-
-### Basic version
-
-Makefiles have the follow Features built-in:
-
-* Bootstrap / Switch / Reset flow for impersonation setup.
-* Teardown for destroying resources.
-* Doctor checks:
-  * doctor-tools → checks for gcloud, terraform, jq.
-  * doctor-light → lists active auth.
-  * doctor-debug → verifies ADC client_email matches USER_ACCOUNT.
-  * doctor-bootstrap → warns if bootstrap_mode=true.
-  * doctor-enforce-bootstrap → hard fail in CI if bootstrap_mode=true.
-  * doctor-all → runs everything, colorized banners + final summary.
-  * CI awareness → when CI=true, stricter enforcement of bootstrap rules.
-
-#
-
-## 📌 Makefile Cheat Sheet
-
-##### ==============================
-
-#
-
-#### Workflow Targets (bootstrap/Makefile)
-
-##### ------------------------------------------
-
- make bootstrap            → Apply impersonation bindings (bootstrap_mode=true)
- make switch               → Reminder to flip bootstrap_mode=false & impersonate
- make reset-bootstrap      → Restore Owner role on $(USER_ACCOUNT)
- make teardown             → Destroy all Terraform-managed resources
-
-#
-
-#### Doctor Targets (health checks)
-
-###### ------------------------------------------
-
- make doctor-tools         → Check required tools (gcloud, terraform, jq)
- make doctor-light         → Show current gcloud authenticated accounts
- make doctor-debug         → Verify ADC client_email matches $(USER_ACCOUNT)
- make doctor-bootstrap     → Warn if bootstrap_mode=true
- make doctor-enforce-bootstrap → Fail hard if bootstrap_mode=true (CI/CD)
- make doctor               → Run doctor-tools + (doctor-bootstrap or enforce-bootstrap)
- make doctor-all           → Run ALL doctor checks (tools, light, debug, bootstrap)
-
-#
-
-#### Terraform Targets (terraform/ directory)
-
-###### ------------------------------------------
-
-make tf-init              → terraform init in terraform/
-make tf-plan              → terraform plan in terraform/
-make tf-apply             → terraform apply in terraform/
-make tf-destroy           → terraform destroy -auto-approve in terraform/
-
-#
-
-#### Convenience
-
-#### ------------------------------------------
-
-make all                  → Run doctor-all then terraform plan
-
-#
-
-###### ==============================
-
-#
-
-#
 
 #
 

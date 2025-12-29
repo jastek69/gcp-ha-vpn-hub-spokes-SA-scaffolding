@@ -14,6 +14,8 @@ locals {
     wakanda-ops     = var.wakanda_project      # preferred *-ops alias
     class-6-5-tiqs  = var.tiqs_project
     tiqs-ops        = var.tiqs_project         # preferred *-ops alias for TIQS
+    dale-ops        = var.dale_project          # preferred *-ops alias for Dale
+    cas-ops         = var.cas_project          # preferred *-ops alias for CAS 
     # future spokes extend here
   }
 
@@ -25,6 +27,8 @@ locals {
       genosha-ops       = var.genosha_sa
       wakanda-ops       = var.wakanda_sa
       tiqs-ops          = var.tiqs_sa
+      dale-ops          = var.dale_sa
+      cas-ops           = var.cas_sa
     }
   
 spoke_sa_by_project_id = {
@@ -42,6 +46,8 @@ spoke_sa_by_project_id = {
     genosha-ops = module.genosha_vpc.vpc_id
     wakanda-ops = module.wakanda_vpc.vpc_id
     tiqs-ops    = module.tiqs_vpc.vpc_id
+    dale-ops    = module.dale_vpc.vpc_id
+    cas-ops     = module.cas_vpc.vpc_id
     # future spokes extend here
   }
 

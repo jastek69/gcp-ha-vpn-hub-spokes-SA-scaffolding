@@ -68,3 +68,33 @@ module "tiqs_subnet" {
   name    = "${var.tiqs_project}-subnet"
 
 }
+
+
+module "daleops_subnet" {
+  source = "../modules/subnet"
+
+  providers = {
+    google = google.dale-ops
+  }
+
+  project = var.dale_project
+  region  = var.dale_region
+  cidr    = var.subnet_cidrs["dale-ops"]
+  network = module.dale_vpc.vpc_self_link
+  name    = "${var.dale_project}-subnet"
+}
+
+
+module "casops_subnet" {
+  source = "../modules/subnet"
+
+  providers = {
+    google = google.cas-ops
+  }
+
+  project = var.cas_project
+  region  = var.cas_region
+  cidr    = var.subnet_cidrs["cas-ops"]
+  network = module.cas_vpc.vpc_self_link
+  name    = "${var.cas_project}-subnet"
+}

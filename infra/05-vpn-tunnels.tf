@@ -40,6 +40,28 @@ resource "google_compute_ha_vpn_gateway" "gateways_tiqs" {
   network  = local.vpc_ids[each.value]
 }
 
+
+resource "google_compute_ha_vpn_gateway" "gateways_daleops" {
+  provider = google.dale-ops
+  for_each = contains(local.tunnel_projects, "dale-ops") ? toset(["dale-ops"]) : toset([])
+  name     = "${each.value}-gateway"
+  project  = local.project_ids[each.value]
+  region   = var.spoke_regions[each.value]
+  network  = local.vpc_ids[each.value]
+} 
+
+
+resource "google_compute_ha_vpn_gateway" "gateways_casops" {
+  provider = google.cas-ops
+  for_each = contains(local.tunnel_projects, "cas-ops") ? toset(["cas-ops"]) : toset([])
+  name     = "${each.value}-gateway"
+  project  = local.project_ids[each.value]
+  region   = var.spoke_regions[each.value]
+  network  = local.vpc_ids[each.value]
+} 
+
+
+# Interface index mapping based on tunnel name suffix (t0 -> 0, t1 -> 1, etc.)
 locals {
   # Lookup map of project_id -> HA VPN gateway self_link, merged across projects
   gateway_self_links = merge(
@@ -47,6 +69,9 @@ locals {
     { for k, v in google_compute_ha_vpn_gateway.gateways_genosha : k => v.self_link },
     { for k, v in google_compute_ha_vpn_gateway.gateways_wakanda : k => v.self_link },
     { for k, v in google_compute_ha_vpn_gateway.gateways_tiqs : k => v.self_link },
+    { for k, v in google_compute_ha_vpn_gateway.gateways_daleops : k => v.self_link },
+    { for k, v in google_compute_ha_vpn_gateway.gateways_casops : k => v.self_link }
+    # future spokes extend here
   )
 }
 
@@ -69,16 +94,27 @@ resource "google_compute_vpn_tunnel" "tunnels_taaops" {
     # Wakanda pairs
     "balerica-wakanda-t0" = local.vpn_tunnels_map["balerica-wakanda-t0"]
     "balerica-wakanda-t1" = local.vpn_tunnels_map["balerica-wakanda-t1"]
-
     # Reverse direction handled in provider-specific blocks below
 
 
     # TIQS-Balerica pairs
     "balerica-tiqs-t0" = local.vpn_tunnels_map["balerica-tiqs-t0"]
     "balerica-tiqs-t1" = local.vpn_tunnels_map["balerica-tiqs-t1"]
-
     # Reverse direction handled in provider-specific blocks below
   
+
+  # daleops-balerica pairs
+    "balerica-daleops-t0" = local.vpn_tunnels_map["balerica-daleops-t0"]
+    "balerica-daleops-t1" = local.vpn_tunnels_map["balerica-daleops-t1"]
+    # Reverse direction handled in provider-specific blocks below
+
+
+  # casops-balerica pairs
+    "balerica-casops-t0" = local.vpn_tunnels_map["balerica-casops-t0"]
+    "balerica-casops-t1" = local.vpn_tunnels_map["balerica-casops-t1"]
+    # Reverse direction handled in provider-specific blocks below
+
+
     /*
     "genosha-wakanda-t0"  = local.vpn_tunnels_map["genosha-wakanda-t0"]
     "genosha-wakanda-t1"  = local.vpn_tunnels_map["genosha-wakanda-t1"]
@@ -165,5 +201,44 @@ resource "google_compute_vpn_tunnel" "tunnels_tiqs" {
   shared_secret = each.value.psk
   peer_gcp_gateway = local.gateway_self_links[each.value.dst]
   router = google_compute_router.routers_tiqs[each.value.src].self_link
+  ike_version = 2
+}
+
+
+resource "google_compute_vpn_tunnel" "tunnels_daleops" {
+  provider = google.dale-ops
+  for_each = {
+    "daleops-balerica-t0" = local.vpn_tunnels_map["daleops-balerica-t0"]
+    "daleops-balerica-t1" = local.vpn_tunnels_map["daleops-balerica-t1"]
+  }
+
+  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project     = local.project_ids[each.value.src]
+  region      = each.value.region_src
+  vpn_gateway = local.gateway_self_links[each.value.src]
+  vpn_gateway_interface = local.interface_index[each.value.name]
+  shared_secret = each.value.psk
+  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
+  router = google_compute_router.routers_daleops[each.value.src].self_link
+  ike_version = 2
+}
+
+
+
+resource "google_compute_vpn_tunnel" "tunnels_casops" {
+  provider = google.cas-ops
+  for_each = {
+    "casops-balerica-t0" = local.vpn_tunnels_map["casops-balerica-t0"]
+    "casops-balerica-t1" = local.vpn_tunnels_map["casops-balerica-t1"]
+  }
+
+  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project     = local.project_ids[each.value.src]
+  region      = each.value.region_src
+  vpn_gateway = local.gateway_self_links[each.value.src]
+  vpn_gateway_interface = local.interface_index[each.value.name]
+  shared_secret = each.value.psk
+  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
+  router = google_compute_router.routers_casops[each.value.src].self_link
   ike_version = 2
 }

@@ -20,6 +20,8 @@ locals {
     google_compute_vpn_tunnel.tunnels_genosha,
     google_compute_vpn_tunnel.tunnels_wakanda,
     google_compute_vpn_tunnel.tunnels_tiqs,
+    google_compute_vpn_tunnel.tunnels_daleops,
+    google_compute_vpn_tunnel.tunnels_casops,
   )
 }
 
@@ -41,6 +43,8 @@ locals {
     google_compute_router_interface.interfaces_genosha,
     google_compute_router_interface.interfaces_wakanda,
     google_compute_router_interface.interfaces_tiqs,
+    google_compute_router_interface.interfaces_daleops,
+    google_compute_router_interface.interfaces_casops,
   )
 }
 
@@ -62,6 +66,8 @@ locals {
     google_compute_router_peer.peers_genosha,
     google_compute_router_peer.peers_wakanda,
     google_compute_router_peer.peers_tiqs,
+    google_compute_router_peer.peers_daleops,
+    google_compute_router_peer.peers_casops,
   )
 }
 

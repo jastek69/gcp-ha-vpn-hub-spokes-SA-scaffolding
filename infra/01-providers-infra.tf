@@ -3,7 +3,7 @@
 terraform {
   backend "gcs" {
     bucket      = "taaopsfirstterraformbucket"
-    prefix      = "terraform/infra-state"
+    prefix      = "terraform/infra-state-112325"
     credentials = "../taaops-e9943412868a.json"
   }
   required_providers {
@@ -66,6 +66,34 @@ provider "google" {
   region                      = var.tiqs_region
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.tiqs_project]
 }
+
+
+
+
+provider "google" {
+  alias                       = "changing3-15-25"
+  project                     = var.dale_project
+  region                      = var.dale_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.dale_project]
+}
+
+
+provider "google" {
+  alias                       = "dale-ops"
+  project                     = var.dale_project
+  region                      = var.dale_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.dale_project]
+}
+
+provider "google" {
+  alias                       = "cas-ops"
+  project                     = var.cas_project
+  region                      = var.cas_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.cas_project]
+}
+
+
+
 
 # Future expansion: add Atlantis, Dale, Tiqs here as needed
 # Example:

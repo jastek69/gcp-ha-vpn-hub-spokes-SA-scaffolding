@@ -53,3 +53,26 @@ module "tiqs_hub" {
   project = var.tiqs_project
   name    = "tiqs"
 }
+
+
+module "daleops_hub" {
+  source = "../modules/hub"
+
+  providers = {
+    google = google.dale-ops
+  }
+
+  project = var.dale_project
+  name    = "daleops"
+}
+
+module "casops_hub" {
+  source = "../modules/hub"
+
+  providers = {
+    google = google.cas-ops
+  }
+
+  project = var.cas_project
+  name    = "casops"
+}

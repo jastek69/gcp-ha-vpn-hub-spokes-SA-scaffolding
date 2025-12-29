@@ -52,7 +52,13 @@ variable "tiqs_project" { type = string }
 variable "tiqs_region" { type = string }
 variable "tiqs_zone" { type = string }
 
+variable "dale_project" { type = string }
+variable "dale_region" { type = string }
+variable "dale_zone" { type = string }
 
+variable "cas_project" { type = string }
+variable "cas_region" { type = string }
+variable "cas_zone" { type = string }
 
 
 
@@ -78,6 +84,18 @@ variable "wakanda_sa" {
 variable "tiqs_sa" {
   type        = string
   description = "Terraform SA for TIQS project"
+}
+
+
+variable "dale_sa" {
+  type        = string
+  description = "Terraform SA for Dale project"
+}
+
+
+variable "cas_sa" {
+  type        = string
+  description = "Terraform SA for CAS project"
 }
 
 

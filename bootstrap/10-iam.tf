@@ -25,5 +25,8 @@ resource "google_project_iam_member" "cross_bindings" {
     google_project_iam_custom_role.vpn_role_genosha,
     google_project_iam_custom_role.vpn_role_wakanda,
     google_project_iam_custom_role.vpn_role_tiqs,
+    google_project_iam_custom_role.vpn_role_dale,
+    google_project_iam_custom_role.vpn_role_cas,
+    # future spokes extend here
   ]
 }

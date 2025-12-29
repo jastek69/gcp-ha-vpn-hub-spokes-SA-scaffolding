@@ -3,7 +3,7 @@
 terraform {
   backend "gcs" {
     bucket      = "taaopsfirstterraformbucket"
-    prefix      = "terraform/bootstrap-state"
+    prefix      = "terraform/bootstrap-state-112325"
     credentials = "../taaops-e9943412868a.json"
   }
   required_providers {
@@ -57,7 +57,25 @@ provider "google" {
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.tiqs_project]
 }
 
-# Future expansion: add Atlantis, Dale, Tiqs here as needed
+
+provider "google" {
+  alias                       = "dale-ops"
+  project                     = var.dale_project
+  region                      = var.dale_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.dale_project]
+  
+}
+
+
+provider "google" {
+  alias                       = "cas-ops"
+  project                     = var.cas_project
+  region                      = var.cas_region
+  impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.cas_project]
+}
+
+
+# Future expansion: e.g. add Atlantis here as needed
 # Example:
 # provider "google" {
 #   alias                       = "atlantis-ops"

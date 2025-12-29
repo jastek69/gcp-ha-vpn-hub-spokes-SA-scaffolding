@@ -14,22 +14,40 @@ locals {
     wakanda-ops     = var.wakanda_project      # preferred *-ops alias
     class-6-5-tiqs  = var.tiqs_project
     tiqs-ops        = var.tiqs_project         # preferred *-ops alias
+    dale-ops        = var.dale_project
+    cas-ops         = var.cas_project
     # future spokes extend here
   }
 
   # -------------------------------------------------------------------
   # Canonical map of logical project key -> Terraform SA email
-  # Normalize incoming spokes to preferred keys to avoid duplicates
+  # Normalize incoming spokes to preferred keys to avoid duplicates.
+  # Normalization logic converts the raw key into the preferred key - 
+  # map the real project IDs with the preferred logical keys;
+  # incoming raw project ID  gets rewritten to the *-ops alias before merging
   # -------------------------------------------------------------------
   normalized_spokes = {
     for k, v in var.spokes :
-    (k == "class-6-5-tiqs" ? "tiqs-ops" : k) => v
+    (
+      k == "class-6-5-tiqs" ? "tiqs-ops" :
+      k == "changing3-15-25" ? "dale-ops" :
+      k == "kazapes1" ? "cas-ops" :
+      k    
+    ) => v
   }
 
   normalized_extra_spokes = {
     for k, v in var.extra_bootstrap_spokes :
-    (k == "class-6-5-tiqs" ? "tiqs-ops" : k) => v
+    (
+      k == "class-6-5-tiqs" ? "tiqs-ops" :
+      k == "changing3-15-25" ? "dale-ops" :
+      k == "kazapes1" ? "cas-ops" :
+      k    
+    ) => v
   }
+
+
+
 
   spoke_sas = merge(
     local.normalized_spokes,
@@ -38,6 +56,8 @@ locals {
       genosha-ops  = var.genosha_sa
       wakanda-ops  = var.wakanda_sa     # preferred *-ops alias
       tiqs-ops     = var.tiqs_sa        # preferred *-ops alias
+      dale-ops     = var.dale_sa        # preferred *-ops alias
+      cas-ops      = var.cas_sa          # preferred *-ops alias
     },
     local.normalized_extra_spokes
   )
