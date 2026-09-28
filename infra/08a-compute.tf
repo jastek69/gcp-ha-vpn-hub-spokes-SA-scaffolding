@@ -78,3 +78,39 @@ module "tiqs_vm" {
   service_account_email = var.tiqs_sa
   project_key           = "class-6-5-tiqs"
 }
+
+
+module "daleops_vm" {
+  source = "../modules/compute"
+
+  providers = {
+    google = google.dale-ops
+  }
+
+  project               = var.dale_project
+  zone                  = var.dale_zone
+  instance_name         = "daleops-vm"
+  machine_type          = "n2-standard-2"
+  subnetwork            = module.daleops_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
+  service_account_email = var.dale_sa
+  project_key           = "changing3-15-25"
+}
+
+
+module "casops_vm" {
+  source = "../modules/compute"
+
+  providers = {
+    google = google.cas-ops
+  }
+
+  project               = var.cas_project
+  zone                  = var.cas_zone
+  instance_name         = "casops-vm"
+  machine_type          = "e2-standard-2"
+  subnetwork            = module.casops_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
+  service_account_email = var.cas_sa
+  project_key           = "cas-ops"
+}

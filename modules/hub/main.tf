@@ -13,7 +13,7 @@ terraform {
 
 
 variable "project" { type = string }
-variable "name"    { type = string }
+variable "name" { type = string }
 
 resource "google_network_connectivity_hub" "this" {
   name        = "${var.name}-hub"

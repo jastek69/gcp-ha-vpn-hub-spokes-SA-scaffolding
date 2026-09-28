@@ -1,0 +1,45 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        root: [bootstrap, infra]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Format (whole repo)
+        run: terraform fmt -check -recursive -diff
+
+      # -backend=false: no state bucket, no GCP credentials needed
+      - name: Init
+        working-directory: ${{ matrix.root }}
+        run: terraform init -backend=false -input=false
+
+      - name: Validate
+        working-directory: ${{ matrix.root }}
+        run: terraform validate -no-color
+
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Plan files embed variable values, including VPN pre-shared keys.
+      - name: No plan files or key material committed
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)(tfplan[^/]*|plan|plan\.json|[^/]*\.tfplan|[^/]*\.tfstate[^/]*)$|-[0-9a-f]{12}\.json$' || true)
+          if [ -n "$bad" ]; then echo "::error::Remove from git: $bad"; exit 1; fi
+
+      - name: Shell syntax
+        run: for f in scripts/*.sh terraform_bootstrap.sh; do bash -n "$f"; done

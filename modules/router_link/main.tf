@@ -13,14 +13,14 @@ terraform {
 }
 
 
-variable "project"   { type = string }
-variable "region"    { type = string }
-variable "router"    { type = string }
-variable "ip_range"  { type = string }
-variable "tunnel"    { type = string }
-variable "peer_ip"   { type = string }
-variable "peer_asn"  { type = number }
-variable "name"      { type = string }
+variable "project" { type = string }
+variable "region" { type = string }
+variable "router" { type = string }
+variable "ip_range" { type = string }
+variable "tunnel" { type = string }
+variable "peer_ip" { type = string }
+variable "peer_asn" { type = number }
+variable "name" { type = string }
 
 resource "google_compute_router_interface" "this" {
   name       = "${var.name}-if"
@@ -92,20 +92,20 @@ variable "name" {
 
 # Router Interface
 resource "google_compute_router_interface" "this" {
-  project = var.project
-  region  = var.region
-  name    = "${var.router}-${var.name}-if"
-  router  = var.router
+  project    = var.project
+  region     = var.region
+  name       = "${var.router}-${var.name}-if"
+  router     = var.router
   ip_range   = var.ip_range
   vpn_tunnel = var.tunnel
 }
 
 # Router Peer
 resource "google_compute_router_peer" "this" {
-  project   = var.project
-  region    = var.region
-  name      = "${var.router}-${var.name}-peer"
-  router    = var.router
+  project         = var.project
+  region          = var.region
+  name            = "${var.router}-${var.name}-peer"
+  router          = var.router
   peer_ip_address = var.peer_ip
   peer_asn        = var.peer_asn
   interface       = google_compute_router_interface.this.name

@@ -56,13 +56,7 @@ cat <<EOF > /var/www/html/index.html
   <div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
     <div class="w3-display-topleft w3-padding-large w3-xlarge"></div>
     <div class="w3-display-middle w3-center">
-      <iframe src="https://www.shutterstock.com/shutterstock/videos/1084391821/preview/stock-footage-back-view-of-a-girl-in-swimsuit-beautiful-dark-skinned-model-in-a-white-bikini.webm"
-              width="500"
-              height="270"
-              style="border-radius:10px;"
-              frameBorder="0"              
-              allowFullScreen>
-      </iframe>
+      <h1 class="w3-jumbo w3-animate-top">Service Online</h1>
       <hr class="w3-border-grey" style="margin:auto;width:40%;margin-top:15px;">
       <h3 class="w3-large w3-center" style="margin-top:15px;">        
       </h3>

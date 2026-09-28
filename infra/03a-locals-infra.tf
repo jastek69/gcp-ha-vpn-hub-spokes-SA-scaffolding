@@ -9,11 +9,13 @@ locals {
   # Project IDs keyed by logical project key (friendly name -> real ID)
   # -------------------------------------------------------------------
   project_ids = {
-    taaops          = var.balerica_project
-    genosha-ops     = var.genosha_project
-    wakanda-ops     = var.wakanda_project      # preferred *-ops alias
-    class-6-5-tiqs  = var.tiqs_project
-    tiqs-ops        = var.tiqs_project         # preferred *-ops alias for TIQS
+    taaops         = var.balerica_project
+    genosha-ops    = var.genosha_project
+    wakanda-ops    = var.wakanda_project # preferred *-ops alias
+    class-6-5-tiqs = var.tiqs_project
+    tiqs-ops       = var.tiqs_project # preferred *-ops alias for TIQS
+    dale-ops       = var.dale_project # preferred *-ops alias for Dale
+    cas-ops        = var.cas_project  # preferred *-ops alias for CAS 
     # future spokes extend here
   }
 
@@ -21,13 +23,15 @@ locals {
   # Canonical map of logical project key -> Terraform SA email
   # -------------------------------------------------------------------
   spoke_sas = {
-      taaops            = var.balerica_sa
-      genosha-ops       = var.genosha_sa
-      wakanda-ops       = var.wakanda_sa
-      tiqs-ops          = var.tiqs_sa
-    }
-  
-spoke_sa_by_project_id = {
+    taaops      = var.balerica_sa
+    genosha-ops = var.genosha_sa
+    wakanda-ops = var.wakanda_sa
+    tiqs-ops    = var.tiqs_sa
+    dale-ops    = var.dale_sa
+    cas-ops     = var.cas_sa
+  }
+
+  spoke_sa_by_project_id = {
     for key, sa in local.spoke_sas :
     local.project_ids[key] => sa
   }
@@ -42,6 +46,8 @@ spoke_sa_by_project_id = {
     genosha-ops = module.genosha_vpc.vpc_id
     wakanda-ops = module.wakanda_vpc.vpc_id
     tiqs-ops    = module.tiqs_vpc.vpc_id
+    dale-ops    = module.dale_vpc.vpc_id
+    cas-ops     = module.cas_vpc.vpc_id
     # future spokes extend here
   }
 

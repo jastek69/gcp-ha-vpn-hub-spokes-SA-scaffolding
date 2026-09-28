@@ -12,11 +12,11 @@ terraform {
 }
 
 
-variable "project"        { type = string }
-variable "region"         { type = string }
-variable "hub_id"         { type = string }
+variable "project" { type = string }
+variable "region" { type = string }
+variable "hub_id" { type = string }
 variable "vpn_tunnel_uris" { type = list(string) }
-variable "name"           { type = string }
+variable "name" { type = string }
 
 resource "google_network_connectivity_spoke" "this" {
   name     = "${var.name}-spoke"
@@ -24,7 +24,7 @@ resource "google_network_connectivity_spoke" "this" {
   hub      = var.hub_id
 
   linked_vpn_tunnels {
-    uris                   = var.vpn_tunnel_uris
+    uris                       = var.vpn_tunnel_uris
     site_to_site_data_transfer = true
   }
 

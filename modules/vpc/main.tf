@@ -23,10 +23,10 @@ variable "name" {
 }
 
 resource "google_compute_network" "this" {
-  project                  = var.project
-  name                     = var.name
-  auto_create_subnetworks  = false
-  mtu                      = 1460
+  project                         = var.project
+  name                            = var.name
+  auto_create_subnetworks         = false
+  mtu                             = 1460
   delete_default_routes_on_create = false
 }
 

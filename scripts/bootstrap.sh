@@ -1,40 +1,70 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OWNER_ACCOUNT="user:you@example.com"
+# Wrapper for bootstrap Terraform runs.
+# Usage:
+#   ./scripts/bootstrap.sh apply   # init + plan + apply (default)
+#   ./scripts/bootstrap.sh plan    # init + plan only
+#   ./scripts/bootstrap.sh destroy # destroy bootstrap resources
 
-echo "==> authenticating ADC as bootstrap owner"
-gcloud auth application-default login
+CMD="${1:-apply}"
+shift || true
 
-echo "==> terraform init (bootstrap mode)"
-terraform init -reconfigure
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TF_BIN="${TF_BIN:-terraform}"
+TFVARS="${TFVARS:-${ROOT_DIR}/terraform.tfvars}"
+PLAN_FILE="${PLAN_FILE:-tfplan_bootstrap}"
+LOCK_TIMEOUT="${LOCK_TIMEOUT:-5m}"
 
-echo "==> stage 1: impersonation bindings"
-terraform apply -auto-approve \
-  -target=google_service_account_iam_member.balerica_impersonation_token_creator \
-  -target=google_service_account_iam_member.balerica_impersonation_sa_user \
-  -target=google_service_account_iam_member.genosha_impersonation_token_creator \
-  -target=google_service_account_iam_member.genosha_impersonation_sa_user \
-  -target=google_service_account_iam_member.tiqs_impersonation_token_creator \
-  -target=google_service_account_iam_member.tiqs_impersonation_sa_user
+run_init() {
+  echo "==> terraform init (bootstrap)"
+  "$TF_BIN" -chdir="${ROOT_DIR}/bootstrap" init -input=false >/dev/null
+}
 
-echo "==> verify impersonation (optional)"
-gcloud auth print-access-token \
-  --impersonate-service-account=terraform@taaops.iam.gserviceaccount.com >/dev/null
+run_plan() {
+  echo "==> terraform plan (bootstrap_mode=true)"
+  "$TF_BIN" -chdir="${ROOT_DIR}/bootstrap" plan \
+    -input=false \
+    -lock-timeout="${LOCK_TIMEOUT}" \
+    -var-file="${TFVARS}" \
+    -var="bootstrap_mode=true" \
+    -out="${PLAN_FILE}" \
+    "$@"
+}
 
-echo "==> stage 2: baseline IAM roles (still in bootstrap account)"
-terraform apply -auto-approve \
-  -target=google_project_iam_member.baseline_roles \
-  -target=google_project_iam_member.cross_bindings \
-  -target=google_project_iam_custom_role.vpn_role_taaops \
-  -target=google_project_iam_custom_role.vpn_role_genosha \
-  -target=google_project_iam_custom_role.vpn_role_tiqs
+run_apply() {
+  echo "==> terraform apply ${PLAN_FILE}"
+  "$TF_BIN" -chdir="${ROOT_DIR}/bootstrap" apply \
+    -input=false \
+    "${PLAN_FILE}"
+}
 
-echo "==> stage 3: switch to impersonation"
-gcloud auth application-default login --no-launch-browser \
-  --account "ci-account@example.com"
-terraform plan >/dev/null
+run_destroy() {
+  echo "==> terraform destroy (bootstrap_mode=true)"
+  "$TF_BIN" -chdir="${ROOT_DIR}/bootstrap" destroy \
+    -input=false \
+    -lock-timeout="${LOCK_TIMEOUT}" \
+    -var-file="${TFVARS}" \
+    -var="bootstrap_mode=true" \
+    "$@"
+}
 
-echo "==> stage 4: full converge"
-terraform apply -auto-approve
-echo "==> complete!"
+case "${CMD}" in
+  plan)
+    run_init
+    run_plan "$@"
+    ;;
+  apply)
+    run_init
+    run_plan "$@"
+    run_apply
+    ;;
+  destroy)
+    run_init
+    run_destroy "$@"
+    ;;
+  *)
+    echo "Usage: $0 {plan|apply|destroy}" >&2
+    exit 1
+    ;;
+esac

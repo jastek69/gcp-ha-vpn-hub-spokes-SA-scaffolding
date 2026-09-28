@@ -47,6 +47,9 @@ module "wakanda_vpc" {
 }
 
 
+# ----------------------
+# TIQS VPC
+# ----------------------
 module "tiqs_vpc" {
   source = "../modules/vpc"
 
@@ -57,3 +60,32 @@ module "tiqs_vpc" {
   project = var.tiqs_project
   name    = "${var.tiqs_project}-vpc"
 }
+
+
+#----------------------
+# Dale VPC
+#----------------------
+module "dale_vpc" {
+  source = "../modules/vpc"
+
+  providers = {
+    google = google.dale-ops
+  }
+
+  project = var.dale_project
+  name    = "${var.dale_project}-vpc"
+}
+
+module "cas_vpc" {
+  source = "../modules/vpc"
+
+  providers = {
+    google = google.cas-ops
+  }
+
+  project = var.cas_project
+  name    = "${var.cas_project}-vpc"
+}
+
+
+# future spokes extend here
