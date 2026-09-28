@@ -9,13 +9,13 @@ locals {
   # Project IDs keyed by logical project key (friendly name -> real ID)
   # -------------------------------------------------------------------
   project_ids = {
-    taaops          = var.balerica_project
-    genosha-ops     = var.genosha_project
-    wakanda-ops     = var.wakanda_project      # preferred *-ops alias
-    class-6-5-tiqs  = var.tiqs_project
-    tiqs-ops        = var.tiqs_project         # preferred *-ops alias
-    dale-ops        = var.dale_project
-    cas-ops         = var.cas_project
+    taaops         = var.balerica_project
+    genosha-ops    = var.genosha_project
+    wakanda-ops    = var.wakanda_project # preferred *-ops alias
+    class-6-5-tiqs = var.tiqs_project
+    tiqs-ops       = var.tiqs_project # preferred *-ops alias
+    dale-ops       = var.dale_project
+    cas-ops        = var.cas_project
     # future spokes extend here
   }
 
@@ -32,7 +32,7 @@ locals {
       k == "class-6-5-tiqs" ? "tiqs-ops" :
       k == "changing3-15-25" ? "dale-ops" :
       k == "kazapes1" ? "cas-ops" :
-      k    
+      k
     ) => v
   }
 
@@ -42,7 +42,7 @@ locals {
       k == "class-6-5-tiqs" ? "tiqs-ops" :
       k == "changing3-15-25" ? "dale-ops" :
       k == "kazapes1" ? "cas-ops" :
-      k    
+      k
     ) => v
   }
 
@@ -52,12 +52,12 @@ locals {
   spoke_sas = merge(
     local.normalized_spokes,
     {
-      taaops       = var.balerica_sa
-      genosha-ops  = var.genosha_sa
-      wakanda-ops  = var.wakanda_sa     # preferred *-ops alias
-      tiqs-ops     = var.tiqs_sa        # preferred *-ops alias
-      dale-ops     = var.dale_sa        # preferred *-ops alias
-      cas-ops      = var.cas_sa          # preferred *-ops alias
+      taaops      = var.balerica_sa
+      genosha-ops = var.genosha_sa
+      wakanda-ops = var.wakanda_sa # preferred *-ops alias
+      tiqs-ops    = var.tiqs_sa    # preferred *-ops alias
+      dale-ops    = var.dale_sa    # preferred *-ops alias
+      cas-ops     = var.cas_sa     # preferred *-ops alias
     },
     local.normalized_extra_spokes
   )

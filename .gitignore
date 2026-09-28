@@ -69,3 +69,10 @@ terraform.rc
 # Allow files to override negated patterns
 # Remove hash symbol to enable
 # !example.json
+# Terraform plan outputs embed variable values (including VPN pre-shared keys).
+# Never commit them.
+tfplan
+tfplan_*
+*.tfplan
+**/plan
+**/plan.json

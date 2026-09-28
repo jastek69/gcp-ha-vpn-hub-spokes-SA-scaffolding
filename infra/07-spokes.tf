@@ -70,7 +70,7 @@ module "tiqs_spoke" {
   vpn_tunnel_uris = [
     google_compute_vpn_tunnel.tunnels_tiqs["tiqs-balerica-t0"].self_link,
     google_compute_vpn_tunnel.tunnels_tiqs["tiqs-balerica-t1"].self_link,
-  ]   
+  ]
 }
 
 
@@ -82,9 +82,9 @@ module "daleops_spoke" {
   }
 
   project = var.dale_project
-  region = var.dale_region
-  name = "daleops"
-  hub_id = module.daleops_hub.hub_id
+  region  = var.dale_region
+  name    = "daleops"
+  hub_id  = module.daleops_hub.hub_id
   vpn_tunnel_uris = [
     google_compute_vpn_tunnel.tunnels_daleops["daleops-balerica-t0"].self_link,
     google_compute_vpn_tunnel.tunnels_daleops["daleops-balerica-t1"].self_link,
@@ -100,9 +100,9 @@ module "casops_spoke" {
   }
 
   project = var.cas_project
-  region = var.cas_region
-  name = "casops"
-  hub_id = module.casops_hub.hub_id
+  region  = var.cas_region
+  name    = "casops"
+  hub_id  = module.casops_hub.hub_id
   vpn_tunnel_uris = [
     google_compute_vpn_tunnel.tunnels_casops["casops-balerica-t0"].self_link,
     google_compute_vpn_tunnel.tunnels_casops["casops-balerica-t1"].self_link,

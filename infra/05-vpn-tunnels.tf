@@ -48,7 +48,7 @@ resource "google_compute_ha_vpn_gateway" "gateways_daleops" {
   project  = local.project_ids[each.value]
   region   = var.spoke_regions[each.value]
   network  = local.vpc_ids[each.value]
-} 
+}
 
 
 resource "google_compute_ha_vpn_gateway" "gateways_casops" {
@@ -58,7 +58,7 @@ resource "google_compute_ha_vpn_gateway" "gateways_casops" {
   project  = local.project_ids[each.value]
   region   = var.spoke_regions[each.value]
   network  = local.vpc_ids[each.value]
-} 
+}
 
 
 # Interface index mapping based on tunnel name suffix (t0 -> 0, t1 -> 1, etc.)
@@ -101,15 +101,15 @@ resource "google_compute_vpn_tunnel" "tunnels_taaops" {
     "balerica-tiqs-t0" = local.vpn_tunnels_map["balerica-tiqs-t0"]
     "balerica-tiqs-t1" = local.vpn_tunnels_map["balerica-tiqs-t1"]
     # Reverse direction handled in provider-specific blocks below
-  
 
-  # daleops-balerica pairs
+
+    # daleops-balerica pairs
     "balerica-daleops-t0" = local.vpn_tunnels_map["balerica-daleops-t0"]
     "balerica-daleops-t1" = local.vpn_tunnels_map["balerica-daleops-t1"]
     # Reverse direction handled in provider-specific blocks below
 
 
-  # casops-balerica pairs
+    # casops-balerica pairs
     "balerica-casops-t0" = local.vpn_tunnels_map["balerica-casops-t0"]
     "balerica-casops-t1" = local.vpn_tunnels_map["balerica-casops-t1"]
     # Reverse direction handled in provider-specific blocks below
@@ -157,15 +157,15 @@ resource "google_compute_vpn_tunnel" "tunnels_genosha" {
     "genosha-balerica-t1" = local.vpn_tunnels_map["genosha-balerica-t1"]
   }
 
-  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
-  project     = local.project_ids[each.value.src]
-  region      = each.value.region_src
-  vpn_gateway = local.gateway_self_links[each.value.src]
+  name                  = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project               = local.project_ids[each.value.src]
+  region                = each.value.region_src
+  vpn_gateway           = local.gateway_self_links[each.value.src]
   vpn_gateway_interface = local.interface_index[each.value.name]
-  shared_secret = each.value.psk
-  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
-  router = google_compute_router.routers_genosha[each.value.src].self_link
-  ike_version = 2
+  shared_secret         = each.value.psk
+  peer_gcp_gateway      = local.gateway_self_links[each.value.dst]
+  router                = google_compute_router.routers_genosha[each.value.src].self_link
+  ike_version           = 2
 }
 
 resource "google_compute_vpn_tunnel" "tunnels_wakanda" {
@@ -175,15 +175,15 @@ resource "google_compute_vpn_tunnel" "tunnels_wakanda" {
     "wakanda-balerica-t1" = local.vpn_tunnels_map["wakanda-balerica-t1"]
   }
 
-  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
-  project     = local.project_ids[each.value.src]
-  region      = each.value.region_src
-  vpn_gateway = local.gateway_self_links[each.value.src]
+  name                  = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project               = local.project_ids[each.value.src]
+  region                = each.value.region_src
+  vpn_gateway           = local.gateway_self_links[each.value.src]
   vpn_gateway_interface = local.interface_index[each.value.name]
-  shared_secret = each.value.psk
-  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
-  router = google_compute_router.routers_wakanda[each.value.src].self_link
-  ike_version = 2
+  shared_secret         = each.value.psk
+  peer_gcp_gateway      = local.gateway_self_links[each.value.dst]
+  router                = google_compute_router.routers_wakanda[each.value.src].self_link
+  ike_version           = 2
 }
 
 resource "google_compute_vpn_tunnel" "tunnels_tiqs" {
@@ -193,15 +193,15 @@ resource "google_compute_vpn_tunnel" "tunnels_tiqs" {
     "tiqs-balerica-t1" = local.vpn_tunnels_map["tiqs-balerica-t1"]
   }
 
-  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
-  project     = local.project_ids[each.value.src]
-  region      = each.value.region_src
-  vpn_gateway = local.gateway_self_links[each.value.src]
+  name                  = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project               = local.project_ids[each.value.src]
+  region                = each.value.region_src
+  vpn_gateway           = local.gateway_self_links[each.value.src]
   vpn_gateway_interface = local.interface_index[each.value.name]
-  shared_secret = each.value.psk
-  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
-  router = google_compute_router.routers_tiqs[each.value.src].self_link
-  ike_version = 2
+  shared_secret         = each.value.psk
+  peer_gcp_gateway      = local.gateway_self_links[each.value.dst]
+  router                = google_compute_router.routers_tiqs[each.value.src].self_link
+  ike_version           = 2
 }
 
 
@@ -212,15 +212,15 @@ resource "google_compute_vpn_tunnel" "tunnels_daleops" {
     "daleops-balerica-t1" = local.vpn_tunnels_map["daleops-balerica-t1"]
   }
 
-  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
-  project     = local.project_ids[each.value.src]
-  region      = each.value.region_src
-  vpn_gateway = local.gateway_self_links[each.value.src]
+  name                  = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project               = local.project_ids[each.value.src]
+  region                = each.value.region_src
+  vpn_gateway           = local.gateway_self_links[each.value.src]
   vpn_gateway_interface = local.interface_index[each.value.name]
-  shared_secret = each.value.psk
-  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
-  router = google_compute_router.routers_daleops[each.value.src].self_link
-  ike_version = 2
+  shared_secret         = each.value.psk
+  peer_gcp_gateway      = local.gateway_self_links[each.value.dst]
+  router                = google_compute_router.routers_daleops[each.value.src].self_link
+  ike_version           = 2
 }
 
 
@@ -232,13 +232,13 @@ resource "google_compute_vpn_tunnel" "tunnels_casops" {
     "casops-balerica-t1" = local.vpn_tunnels_map["casops-balerica-t1"]
   }
 
-  name        = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
-  project     = local.project_ids[each.value.src]
-  region      = each.value.region_src
-  vpn_gateway = local.gateway_self_links[each.value.src]
+  name                  = "${each.value.src}-to-${each.value.dst}-${each.value.name}"
+  project               = local.project_ids[each.value.src]
+  region                = each.value.region_src
+  vpn_gateway           = local.gateway_self_links[each.value.src]
   vpn_gateway_interface = local.interface_index[each.value.name]
-  shared_secret = each.value.psk
-  peer_gcp_gateway = local.gateway_self_links[each.value.dst]
-  router = google_compute_router.routers_casops[each.value.src].self_link
-  ike_version = 2
+  shared_secret         = each.value.psk
+  peer_gcp_gateway      = local.gateway_self_links[each.value.dst]
+  router                = google_compute_router.routers_casops[each.value.src].self_link
+  ike_version           = 2
 }

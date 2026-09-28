@@ -19,7 +19,7 @@
 ############################################
 
 # Bootstrap toggle
-variable "bootstrap_mode" {  #Set to False in infra layer
+variable "bootstrap_mode" { #Set to False in infra layer
   type        = bool
   description = "true = ADC Owner (bootstrap), false = impersonate Terraform SAs"
 }

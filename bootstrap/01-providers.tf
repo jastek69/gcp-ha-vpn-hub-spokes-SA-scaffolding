@@ -63,7 +63,7 @@ provider "google" {
   project                     = var.dale_project
   region                      = var.dale_region
   impersonate_service_account = var.bootstrap_mode ? null : local.spoke_sa_by_project_id[var.dale_project]
-  
+
 }
 
 

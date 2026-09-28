@@ -87,14 +87,14 @@ module "daleops_vm" {
     google = google.dale-ops
   }
 
-  project = var.dale_project
-  zone = var.dale_zone
-  instance_name = "daleops-vm"
-  machine_type = "n2-standard-2"
-  subnetwork = module.daleops_subnet.subnet_id
-  startup_scripts = var.startup_scripts
+  project               = var.dale_project
+  zone                  = var.dale_zone
+  instance_name         = "daleops-vm"
+  machine_type          = "n2-standard-2"
+  subnetwork            = module.daleops_subnet.subnet_id
+  startup_scripts       = var.startup_scripts
   service_account_email = var.dale_sa
-  project_key = "changing3-15-25"
+  project_key           = "changing3-15-25"
 }
 
 
